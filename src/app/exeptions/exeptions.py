@@ -1,0 +1,2 @@
+class DockerNotRunningError(Exception):
+    pass

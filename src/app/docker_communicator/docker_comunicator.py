@@ -2,17 +2,23 @@ import logging
 import subprocess
 
 from .commands import *
+from ..exeptions.exeptions import DockerNotRunningError
 
 
 class DockerCommunicator:
 
     @staticmethod
     def __get_output(command: str) -> str:
-        return subprocess.check_output(
-            command,
-            shell=True,
-            text=True
-        )
+        try:
+            return subprocess.check_output(
+                command,
+                shell=True,
+                text=True
+            )
+        except subprocess.CalledProcessError:
+            raise DockerNotRunningError(
+                "Docker not running..."
+            )
 
     def check_version(self) -> str:
         return self.__get_output(
