@@ -7,6 +7,7 @@ from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable, MenuChoice
 from ..utils.constants import DOCKER_NOT_INSTALL_TEXT, KEY_EXIT, KEY_ESC, KEY_REFRESH, KEY_ENTER, KEY_SPASE, \
     MAKE_FULL_SCREEN_TEXT, KEY_DELETE
+from ..utils.utils import get_image
 
 
 class Viewer:
@@ -25,11 +26,17 @@ class Viewer:
         self.underlined_images: list[int] = list()
         self.underlined_containers: list[int] = list()
 
+    def get_number_of_images(self) -> int:
+        return len(self.docker_communicator.images().split("\n"))
+
+    def get_number_of_containers(self) -> int:
+        return len(self.docker_communicator.containers().split("\n"))
+
     def check_indexes(self):
-        if self.image_index < 0 or self.image_index > len(self.docker_communicator.images().split("\n")) - 3:
+        if self.image_index < 0 or self.image_index > self.get_number_of_images() - 3:
             self.image_index = 0
         if (self.container_index < 0
-                or self.container_index > len(self.docker_communicator.containers().split("\n")) - 3):
+                or self.container_index > self.get_number_of_containers() - 3):
             self.container_index = 0
 
     def update(self):
@@ -86,7 +93,7 @@ class Viewer:
             if ind == cursor_index:
                 self.stdscr.addstr(table[:width-8], curses.color_pair(Colors.WHITE_ON_YELLOW))
             elif ind in underline_indexes:
-                self.stdscr.addstr(table[:width-8], curses.A_DIM)
+                self.stdscr.addstr(table[:width-8], curses.A_BLINK)
             else:
                 self.stdscr.addstr(table[:width-8])
             self.stdscr.addstr("\n")
@@ -117,6 +124,9 @@ class Viewer:
                     self.get_id_by_index(self.image_index)
                 )
 
+    def put_icon_on_screen(self):
+        self.stdscr.addstr(get_image())
+
     def run(self):
 
         while True:
@@ -143,6 +153,9 @@ class Viewer:
                     self.add_underline()
 
                 if char == KEY_DELETE:
+                    self.stdscr.clear()
+                    self.put_icon_on_screen()
+                    self.stdscr.refresh()
                     self.delete()
                     self.update()
 
