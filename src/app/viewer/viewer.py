@@ -71,9 +71,9 @@ class Viewer:
         start = 0
         end = height - 9
 
-        if cursor_index > height - 9:
+        if cursor_index > end:
             start = cursor_index - height + 10
-            end = start + height - 9
+            end = start + end
 
         for ind, table in enumerate(tables):
             if ind < start:
@@ -112,8 +112,8 @@ class Viewer:
 
             except curses.error:
                 self.stdscr.clear()
-                put_icon_on_screen(self.stdscr)
-                self.stdscr.addstr("\nmake the terminal full screen, please")
+                # put_icon_on_screen(self.stdscr)
+                self.stdscr.addstr("make the terminal full screen, please")
                 self.stdscr.refresh()
                 if self.stdscr.getch() in (KEY_EXIT, KEY_ESC):
                     return
