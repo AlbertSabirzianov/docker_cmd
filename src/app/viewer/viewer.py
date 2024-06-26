@@ -5,8 +5,8 @@ from ..colors.colors import Colors
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable, MenuChoice
-from ..utils.constants import DOCKER_NOT_INSTALL_TEXT, KEY_EXIT, KEY_ESC
-from ..utils.utils import put_icon_on_screen
+from ..utils.constants import DOCKER_NOT_INSTALL_TEXT, KEY_EXIT, KEY_ESC, KEY_REFRESH, KEY_ENTER, KEY_SPASE, \
+    MAKE_FULL_SCREEN_TEXT
 
 
 class Viewer:
@@ -57,11 +57,14 @@ class Viewer:
             else:
                 self.container_index -= 1
 
+    def is_images(self) -> bool:
+        return self.menu_table.choice == MenuChoice.IMAGES
+
     def put_main_table(self):
         tables: list[str] = self.get_tables().split("\n")
-        cursor_index = self.image_index if self.menu_table.choice == MenuChoice.IMAGES \
+        cursor_index = self.image_index if self.is_images() \
             else self.container_index
-        underline_indexes = self.underlined_images if self.menu_table.choice == MenuChoice.IMAGES \
+        underline_indexes = self.underlined_images if self.is_images() \
             else self.underlined_containers
 
         height, width = self.stdscr.getmaxyx()
@@ -83,11 +86,19 @@ class Viewer:
             if ind == cursor_index:
                 self.stdscr.addstr(table[:width-8], curses.color_pair(Colors.WHITE_ON_YELLOW))
             elif ind in underline_indexes:
-                self.stdscr.addstr(table[:width-8], curses.A_BOLD)
+                self.stdscr.addstr(table[:width-8], curses.A_DIM)
             else:
                 self.stdscr.addstr(table[:width-8])
             self.stdscr.addstr("\n")
 
+    def add_underline(self):
+        index = self.image_index if self.is_images() else self.container_index
+        underlined = self.underlined_images if self.is_images() else self.underlined_containers
+
+        if index not in underlined:
+            underlined.append(index)
+        else:
+            underlined.remove(index)
 
     def run(self):
 
@@ -108,12 +119,16 @@ class Viewer:
 
                 if char in (curses.KEY_DOWN, curses.KEY_UP):
                     self.change_index(char)
+
+                if char == KEY_REFRESH:
+                    self.update()
+                if char in (KEY_SPASE, KEY_ENTER):
+                    self.add_underline()
                 self.check_indexes()
 
             except curses.error:
                 self.stdscr.clear()
-                # put_icon_on_screen(self.stdscr)
-                self.stdscr.addstr("make the terminal full screen, please")
+                self.stdscr.addstr(MAKE_FULL_SCREEN_TEXT)
                 self.stdscr.refresh()
                 if self.stdscr.getch() in (KEY_EXIT, KEY_ESC):
                     return
