@@ -2,6 +2,8 @@ import curses
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from ..colors.colors import Colors
+
 
 class MenuChoice(int, Enum):
     IMAGES = 1
@@ -22,11 +24,11 @@ class MenuTable:
     def put_table_on_screen(self, stdscr):
         if TYPE_CHECKING:
             stdscr = curses.initscr()
-        height, width = stdscr.getmaxyx()
+        _, width = stdscr.getmaxyx()
         center = width // 2
 
-        left_color_number = 1 if bool(self.choice) else 2
-        right_color_number = 2 if bool(self.choice) else 1
+        left_color_number = Colors.WHITE_ON_BLUE if bool(self.choice) else Colors.WHITE_ON_BLACK
+        right_color_number = Colors.WHITE_ON_BLACK if bool(self.choice) else Colors.WHITE_ON_BLUE
 
         stdscr.addstr(0, 0, "+" + "-" * (center - 1), curses.color_pair(left_color_number))
         stdscr.addstr(0, center, "+" + "-" * (width - 1), curses.color_pair(right_color_number))

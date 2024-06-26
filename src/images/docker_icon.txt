@@ -7,5 +7,3 @@
        \______ o          __/
          \    \        __/
           \____\______/
-
-make the terminal full screen, please

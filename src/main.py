@@ -1,33 +1,26 @@
 import curses
 from typing import TYPE_CHECKING
 
-from app.docker_communicator.docker_comunicator import docker_communicator
-from app.utils.utils import put_help_text_on_screen
-from app.menu_table.menu_table import menu_table
-
-
-KEY_EXIT = ord('q')
-INVISIBLE = 0
+from app.colors.colors import Colors
+from app.utils.constants import INVISIBLE
+from app.viewer.viewer import Viewer
 
 
 def main(stdscr):
+
+    # set colors
     curses.start_color()
     curses.curs_set(INVISIBLE)
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
-    curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    curses.init_pair(Colors.WHITE_ON_BLUE, curses.COLOR_WHITE, curses.COLOR_BLUE)
+    curses.init_pair(Colors.WHITE_ON_BLACK, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    curses.init_pair(Colors.WHITE_ON_YELLOW, curses.COLOR_WHITE, curses.COLOR_YELLOW)
 
     if TYPE_CHECKING:
         stdscr = curses.initscr()
 
-    while True:
-        stdscr.clear()
-        menu_table.put_table_on_screen(stdscr)
-        stdscr.refresh()
-        char = stdscr.getch()
-        if char == KEY_EXIT:
-            break
-        if char in (curses.KEY_RIGHT, curses.KEY_LEFT):
-            menu_table.change_choice()
+    viewer = Viewer(stdscr)
+    viewer.run()
+
 
 if __name__ == "__main__":
     curses.wrapper(main)
