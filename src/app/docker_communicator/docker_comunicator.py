@@ -37,6 +37,22 @@ class DockerCommunicator:
     def cache_clear(self):
         self.__get_output.cache_clear()
 
+    def delete_image(self, image_id: str) -> None:
+        self.__get_output(
+            DOCKER_IMAGE_RM + image_id
+        )
+
+    def stop_container(self, container_id: str) -> None:
+        self.__get_output(
+            DOCKER_CONTAINER_STOP + container_id
+        )
+
+    def delete_container(self, container_id: str) -> None:
+        self.stop_container(container_id)
+        self.__get_output(
+            DOCKER_CONTAINER_REMOVE + container_id
+        )
+
 
 docker_communicator = DockerCommunicator()
 

@@ -6,7 +6,7 @@ from ..docker_communicator.docker_comunicator import docker_communicator, Docker
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable, MenuChoice
 from ..utils.constants import DOCKER_NOT_INSTALL_TEXT, KEY_EXIT, KEY_ESC, KEY_REFRESH, KEY_ENTER, KEY_SPASE, \
-    MAKE_FULL_SCREEN_TEXT
+    MAKE_FULL_SCREEN_TEXT, KEY_DELETE
 
 
 class Viewer:
@@ -100,6 +100,23 @@ class Viewer:
         else:
             underlined.remove(index)
 
+    def get_id_by_index(self, index: int):
+        tables: list[str] = self.get_tables().split("\n")
+        tables.pop(0)
+        if self.is_images():
+            try:
+                items = [item for item in tables[index].split() if item]
+                return items[2]
+            except IndexError:
+                return None
+
+    def delete(self):
+        if self.is_images():
+            if not self.underlined_images:
+                self.docker_communicator.delete_image(
+                    self.get_id_by_index(self.image_index)
+                )
+
     def run(self):
 
         while True:
@@ -124,6 +141,11 @@ class Viewer:
                     self.update()
                 if char in (KEY_SPASE, KEY_ENTER):
                     self.add_underline()
+
+                if char == KEY_DELETE:
+                    self.delete()
+                    self.update()
+
                 self.check_indexes()
 
             except curses.error:

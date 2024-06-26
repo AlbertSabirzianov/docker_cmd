@@ -3,6 +3,9 @@ KEY_ESC = 27
 KEY_REFRESH = ord('r')
 KEY_ENTER = ord("\n")
 KEY_SPASE = ord(" ")
+KEY_DELETE = ord("d")
+
+
 INVISIBLE = 0
 DOCKER_NOT_INSTALL_TEXT = (
     "Sorry - Docker is not installed or not running...\n"
