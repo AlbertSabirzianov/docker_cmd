@@ -1,7 +1,7 @@
 import curses
 from typing import TYPE_CHECKING
 
-from app.colors.colors import Colors
+from app.utils.enams import Colors
 from app.utils.constants import INVISIBLE
 from app.viewer.viewer import Viewer
 

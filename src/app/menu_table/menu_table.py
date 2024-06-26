@@ -1,13 +1,7 @@
 import curses
-from enum import Enum
 from typing import TYPE_CHECKING
 
-from ..colors.colors import Colors
-
-
-class MenuChoice(int, Enum):
-    IMAGES = 1
-    CONTAINERS = 0
+from ..utils.enams import MenuChoice, Colors
 
 
 class MenuTable:

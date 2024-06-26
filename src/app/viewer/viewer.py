@@ -1,13 +1,13 @@
 import curses
 from typing import TYPE_CHECKING
 
-from ..colors.colors import Colors
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable, MenuChoice
 from ..utils.constants import DOCKER_NOT_INSTALL_TEXT, KEY_EXIT, KEY_ESC, KEY_REFRESH, KEY_ENTER, KEY_SPASE, \
     MAKE_FULL_SCREEN_TEXT, KEY_DELETE
 from ..utils.utils import get_image
+from ..utils.enams import Colors
 
 
 class Viewer:
