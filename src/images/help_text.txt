@@ -1,0 +1,9 @@
+
+
+LEFT, RIGHT  -- change tab
+UP, DOWN     -- move cursor
+SPACE, ENTER -- highlight
+d            -- delete
+r            -- refresh
+q, ESC       -- exit
+h            -- help
