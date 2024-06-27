@@ -6,8 +6,7 @@ from ..docker_communicator.docker_comunicator import docker_communicator, Docker
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable, MenuChoice
 from ..utils.constants import DOCKER_NOT_INSTALL_TEXT, KEY_EXIT, KEY_ESC, KEY_REFRESH, KEY_ENTER, KEY_SPASE, \
-    MAKE_FULL_SCREEN_TEXT, KEY_DELETE, KEY_HELP
-from ..utils.utils import get_image, get_help_text
+    MAKE_FULL_SCREEN_TEXT, KEY_DELETE, KEY_HELP, ICON, HELP_TEXT
 from ..utils.enams import Colors
 
 
@@ -167,15 +166,15 @@ class Viewer:
 
                 if char == KEY_DELETE:
                     self.stdscr.clear()
-                    self.stdscr.addstr(get_image())
+                    self.stdscr.addstr(ICON)
                     self.stdscr.refresh()
                     self.delete()
                     self.update()
 
                 if char == KEY_HELP:
                     self.stdscr.clear()
-                    self.stdscr.addstr(get_image())
-                    self.stdscr.addstr(get_help_text())
+                    self.stdscr.addstr(ICON)
+                    self.stdscr.addstr(HELP_TEXT)
                     self.stdscr.refresh()
                     self.stdscr.getch()
 
