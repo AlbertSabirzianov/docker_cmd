@@ -21,7 +21,7 @@ class DockerCommunicator:
 
     @staticmethod
     def __run_command(command: str) -> None:
-        subprocess.run(command, shell=True, check=False)
+        subprocess.run(command, shell=True, check=False, stdout=subprocess.DEVNULL)
 
     def check_version(self) -> str:
         return self.__get_output(
@@ -36,6 +36,16 @@ class DockerCommunicator:
     def containers(self) -> str:
         return self.__get_output(
             DOCKER_ALL_CONTAINERS
+        )
+
+    def volumes(self) -> str:
+        return self.__get_output(
+            DOCKER_ALL_VOLUMES
+        )
+
+    def delete_volume_by_name(self, name: str):
+        self.__run_command(
+            DOCKER_VOLUME_REMOVE + name
         )
 
     def cache_clear(self):
