@@ -1,3 +1,6 @@
+"""
+This module provides constants for various Docker commands.
+"""
 DOCKER_VERSION = "docker --version"
 DOCKER_PS = "docker ps"
 DOCKER_ALL_IMAGES = "docker images -a"

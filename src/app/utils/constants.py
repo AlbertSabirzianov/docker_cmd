@@ -1,3 +1,8 @@
+"""
+Module: constants
+
+This module provides constants related to Docker commands and key codes.
+"""
 KEY_EXIT = ord('q')
 KEY_ESC = 27
 KEY_REFRESH = ord('r')

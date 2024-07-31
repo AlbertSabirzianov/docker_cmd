@@ -1,6 +1,12 @@
+"""
+Module: viewer
+
+This module provides a Viewer class that represents a viewer for Docker images and containers.
+It provides functionality for displaying and interacting with the Docker images and containers in a terminal window.
+"""
 import curses
 import platform
-from typing import TYPE_CHECKING, Callable
+from typing import Callable
 
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
@@ -11,14 +17,21 @@ from ..utils.enams import Colors
 
 
 class Viewer:
+    """
+    The Viewer class represents a viewer for Docker images and containers.
+    """
 
-    def __init__(self, stdscr):
-        self.stdscr = stdscr
-        if TYPE_CHECKING:
-            self.stdscr = curses.initscr()
-        self.underline_color = curses.A_BLINK if self.is_windows() else curses.A_DIM
-        self.image_id_index = 2
-        self.container_id_index = 0
+    def __init__(self, stdscr: curses.window):
+        """
+        Initializes an instance of the Viewer class.
+
+        Parameters:
+        - stdscr: A curses.window object representing the terminal window.
+        """
+        self.stdscr: curses.window = stdscr
+        self.underline_color: int = curses.A_BLINK if self.is_windows() else curses.A_DIM
+        self.image_id_index: int = 2
+        self.container_id_index: int = 0
         self.docker_communicator: DockerCommunicator = docker_communicator
         self.menu_table: MenuTable = menu_table
         self.image_index: int = 0
@@ -28,15 +41,36 @@ class Viewer:
 
     @staticmethod
     def is_windows() -> bool:
+        """
+        Checks if the current platform is Windows.
+
+        Returns:
+        - A boolean value indicating whether the current platform is Windows.
+        """
         return platform.system() == "Windows"
 
     def get_number_of_images(self) -> int:
+        """
+        Gets the number of Docker images.
+
+        Returns:
+        - The number of Docker images.
+        """
         return len(self.docker_communicator.images().split("\n"))
 
     def get_number_of_containers(self) -> int:
+        """
+        Gets the number of Docker containers.
+
+        Returns:
+        - The number of Docker containers.
+        """
         return len(self.docker_communicator.containers().split("\n"))
 
     def check_indexes(self):
+        """
+        Checks and adjusts the image and container indexes to ensure they are within valid ranges.
+        """
         if self.image_index < 0 or self.image_index > self.get_number_of_images() - 3:
             self.image_index = 0
         if (self.container_index < 0
@@ -44,6 +78,10 @@ class Viewer:
             self.container_index = 0
 
     def update(self):
+        """
+        Updates the viewer by clearing the cache, resetting the image and container indexes,
+        and clearing the underlined images and containers.
+        """
         self.docker_communicator.cache_clear()
         self.image_index = 0
         self.container_index = 0
@@ -51,27 +89,44 @@ class Viewer:
         self.underlined_containers = list()
 
     def get_tables(self) -> str:
-        if self.menu_table.choice == MenuChoice.IMAGES:
+        """
+        Gets the tables of Docker images or containers.
+
+        Returns:
+        - A string representation of the Docker images or containers table.
+        """
+        if self.is_images():
             return self.docker_communicator.images()
         else:
             return self.docker_communicator.containers()
 
     def change_index(self, char: int) -> None:
-        if char == curses.KEY_DOWN:
-            if self.menu_table.choice == MenuChoice.IMAGES:
-                self.image_index += 1
-            else:
-                self.container_index += 1
-        if char == curses.KEY_UP:
-            if self.menu_table.choice == MenuChoice.IMAGES:
-                self.image_index -= 1
-            else:
-                self.container_index -= 1
+        """
+        Changes the image or container index based on the given character input.
+
+        Parameters:
+        - char: An integer representing the character input from the user.
+        """
+        step = 1 if char == curses.KEY_DOWN else -1
+
+        if self.is_images():
+            self.image_index += step
+        else:
+            self.container_index += step
 
     def is_images(self) -> bool:
-        return self.menu_table.choice == MenuChoice.IMAGES
+        """
+        Checks if the current choice is to display Docker images.
+
+        Returns:
+        - A boolean value indicating whether the current choice is to display Docker images.
+        """
+        return self.menu_table.is_images()
 
     def put_main_table(self):
+        """
+        Displays the main table of Docker images or containers in the terminal window.
+        """
         tables: list[str] = self.get_tables().split("\n")
         cursor_index = self.image_index if self.is_images() \
             else self.container_index
@@ -103,6 +158,9 @@ class Viewer:
             self.stdscr.addstr("\n")
 
     def add_underline(self):
+        """
+        Adds or removes an underline to the currently selected image or container.
+        """
         index = self.image_index if self.is_images() else self.container_index
         underlined = self.underlined_images if self.is_images() else self.underlined_containers
 
@@ -112,6 +170,15 @@ class Viewer:
             underlined.remove(index)
 
     def get_id_by_index(self, index: int):
+        """
+        Gets the ID of the Docker image or container at the given index.
+
+        Parameters:
+        - index: An integer representing the index of the Docker image or container.
+
+        Returns:
+        - The ID of the Docker image or container at the given index.
+        """
         tables: list[str] = self.get_tables().split("\n")
         tables.pop(0)
         id_index = self.image_id_index if self.is_images() else self.container_id_index
@@ -123,6 +190,9 @@ class Viewer:
             return None
 
     def delete(self):
+        """
+        Deletes the selected Docker image or container.
+        """
         index: int = self.image_index if self.is_images() else self.container_index
         underlines: list[int] = self.underlined_images if self.is_images() else self.underlined_containers
         docker_func: Callable = self.docker_communicator.delete_image if self.is_images() \
@@ -140,6 +210,9 @@ class Viewer:
                     )
 
     def run(self):
+        """
+        Runs the viewer in an infinite loop, continuously updating and refreshing the display based on user input.
+        """
 
         while True:
             try:
