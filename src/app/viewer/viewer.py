@@ -239,25 +239,29 @@ class Viewer:
         """
         Saves the Docker image specified by the `image_index` attribute to a tar archive file.
         """
-        try:
-            self.docker_communicator.save_image(
-                self.get_id_by_index(self.image_index),
-                self.get_name_by_index(self.image_index) + TAR_ARCHIVE_EXTENSION
-            )
-        except TypeError:
-            return
+        indexes = self.underlined_images if self.underlined_images else [self.image_index]
+        for index in indexes:
+            try:
+                self.docker_communicator.save_image(
+                    self.get_id_by_index(index),
+                    self.get_name_by_index(index) + TAR_ARCHIVE_EXTENSION
+                )
+            except TypeError:
+                continue
 
     def export_container(self):
         """
         Exports the Docker container specified by the `container_index` attribute to a tar archive file.
         """
-        try:
-            self.docker_communicator.export_container(
-                self.get_id_by_index(self.container_index),
-                self.get_name_by_index(self.container_index) + TAR_ARCHIVE_EXTENSION
-            )
-        except TypeError:
-            return
+        indexes = self.underlined_containers if self.underlined_containers else [self.container_index]
+        for index in indexes:
+            try:
+                self.docker_communicator.export_container(
+                    self.get_id_by_index(index),
+                    self.get_name_by_index(index) + TAR_ARCHIVE_EXTENSION
+                )
+            except TypeError:
+                continue
 
     def run(self):
         """
