@@ -23,3 +23,10 @@ class MenuChoice(int, Enum):
     """An enumeration of menu choices with corresponding integer values."""
     IMAGES = 1
     CONTAINERS = 0
+
+
+class OperatingSystems(str, Enum):
+    """An enumeration of Operating systems with corresponding string values."""
+    WINDOWS = "Windows"
+    LINUX = "Linux"
+    JAVA = "Java"

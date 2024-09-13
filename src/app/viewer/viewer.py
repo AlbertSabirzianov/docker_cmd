@@ -10,10 +10,10 @@ from typing import Callable
 
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
-from ..menu_table.menu_table import menu_table, MenuTable, MenuChoice
+from ..menu_table.menu_table import menu_table, MenuTable
 from ..utils.constants import DOCKER_NOT_INSTALL_TEXT, KEY_EXIT, KEY_ESC, KEY_REFRESH, KEY_ENTER, KEY_SPASE, \
     MAKE_FULL_SCREEN_TEXT, KEY_DELETE, KEY_HELP, ICON, HELP_TEXT, KEY_SAVE, KEY_EXPORT, TAR_ARCHIVE_EXTENSION
-from ..utils.enams import Colors
+from ..utils.enams import Colors, OperatingSystems
 
 
 class Viewer:
@@ -30,14 +30,18 @@ class Viewer:
         """
         self.stdscr: curses.window = stdscr
         self.underline_color: int = curses.A_BLINK if self.is_windows() else curses.A_DIM
+
         self.image_id_index: int = 2
         self.image_name_index: int = 0
         self.container_id_index: int = 0
         self.container_name_index: int = -1
+
         self.docker_communicator: DockerCommunicator = docker_communicator
         self.menu_table: MenuTable = menu_table
+
         self.image_index: int = 0
         self.container_index: int = 0
+
         self.underlined_images: list[int] = list()
         self.underlined_containers: list[int] = list()
 
@@ -49,7 +53,7 @@ class Viewer:
         Returns:
         - A boolean value indicating whether the current platform is Windows.
         """
-        return platform.system() == "Windows"
+        return platform.system() == OperatingSystems.WINDOWS
 
     def get_number_of_images(self) -> int:
         """
@@ -235,19 +239,25 @@ class Viewer:
         """
         Saves the Docker image specified by the `image_index` attribute to a tar archive file.
         """
-        self.docker_communicator.save_image(
-            self.get_id_by_index(self.image_index),
-            self.get_name_by_index(self.image_index) + TAR_ARCHIVE_EXTENSION
-        )
+        try:
+            self.docker_communicator.save_image(
+                self.get_id_by_index(self.image_index),
+                self.get_name_by_index(self.image_index) + TAR_ARCHIVE_EXTENSION
+            )
+        except TypeError:
+            return
 
     def export_container(self):
         """
         Exports the Docker container specified by the `container_index` attribute to a tar archive file.
         """
-        self.docker_communicator.export_container(
-            self.get_id_by_index(self.container_index),
-            self.get_name_by_index(self.container_index) + TAR_ARCHIVE_EXTENSION
-        )
+        try:
+            self.docker_communicator.export_container(
+                self.get_id_by_index(self.container_index),
+                self.get_name_by_index(self.container_index) + TAR_ARCHIVE_EXTENSION
+            )
+        except TypeError:
+            return
 
     def run(self):
         """
