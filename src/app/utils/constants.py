@@ -10,6 +10,8 @@ KEY_ENTER = ord("\n")
 KEY_SPASE = ord(" ")
 KEY_DELETE = ord("d")
 KEY_HELP = ord("h")
+KEY_SAVE = ord("s")
+KEY_EXPORT = ord("e")
 
 INVISIBLE = 0
 DOCKER_NOT_INSTALL_TEXT = (
@@ -37,4 +39,8 @@ d            -- delete
 r            -- refresh
 q, ESC       -- exit
 h            -- help
+s            -- save docker image to tar file
+e            -- export docker container to tar file
 """
+
+TAR_ARCHIVE_EXTENSION = ".tar"

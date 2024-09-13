@@ -12,7 +12,7 @@ from ..docker_communicator.docker_comunicator import docker_communicator, Docker
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable, MenuChoice
 from ..utils.constants import DOCKER_NOT_INSTALL_TEXT, KEY_EXIT, KEY_ESC, KEY_REFRESH, KEY_ENTER, KEY_SPASE, \
-    MAKE_FULL_SCREEN_TEXT, KEY_DELETE, KEY_HELP, ICON, HELP_TEXT
+    MAKE_FULL_SCREEN_TEXT, KEY_DELETE, KEY_HELP, ICON, HELP_TEXT, KEY_SAVE, KEY_EXPORT, TAR_ARCHIVE_EXTENSION
 from ..utils.enams import Colors
 
 
@@ -31,7 +31,9 @@ class Viewer:
         self.stdscr: curses.window = stdscr
         self.underline_color: int = curses.A_BLINK if self.is_windows() else curses.A_DIM
         self.image_id_index: int = 2
+        self.image_name_index: int = 0
         self.container_id_index: int = 0
+        self.container_name_index: int = -1
         self.docker_communicator: DockerCommunicator = docker_communicator
         self.menu_table: MenuTable = menu_table
         self.image_index: int = 0
@@ -189,6 +191,26 @@ class Viewer:
         except IndexError:
             return None
 
+    def get_name_by_index(self, index: int):
+        """
+        Gets the name of the Docker image or container at the given index.
+
+        Parameters:
+        - index: An integer representing the index of the Docker image or container.
+
+        Returns:
+        - The name of the Docker image or container at the given index.
+        """
+        tables: list[str] = self.get_tables().split("\n")
+        tables.pop(0)
+        id_index = self.image_name_index if self.is_images() else self.container_name_index
+
+        try:
+            items = [item for item in tables[index].split() if item]
+            return items[id_index]
+        except IndexError:
+            return None
+
     def delete(self):
         """
         Deletes the selected Docker image or container.
@@ -208,6 +230,24 @@ class Viewer:
                     docker_func(
                         self.get_id_by_index(under_index)
                     )
+
+    def save_image(self):
+        """
+        Saves the Docker image specified by the `image_index` attribute to a tar archive file.
+        """
+        self.docker_communicator.save_image(
+            self.get_id_by_index(self.image_index),
+            self.get_name_by_index(self.image_index) + TAR_ARCHIVE_EXTENSION
+        )
+
+    def export_container(self):
+        """
+        Exports the Docker container specified by the `container_index` attribute to a tar archive file.
+        """
+        self.docker_communicator.export_container(
+            self.get_id_by_index(self.container_index),
+            self.get_name_by_index(self.container_index) + TAR_ARCHIVE_EXTENSION
+        )
 
     def run(self):
         """
@@ -250,6 +290,18 @@ class Viewer:
                     self.stdscr.addstr(HELP_TEXT)
                     self.stdscr.refresh()
                     self.stdscr.getch()
+
+                if char == KEY_SAVE and self.is_images():
+                    self.stdscr.clear()
+                    self.stdscr.addstr(ICON)
+                    self.stdscr.refresh()
+                    self.save_image()
+
+                if char == KEY_EXPORT and not self.is_images():
+                    self.stdscr.clear()
+                    self.stdscr.addstr(ICON)
+                    self.stdscr.refresh()
+                    self.export_container()
 
                 self.check_indexes()
 

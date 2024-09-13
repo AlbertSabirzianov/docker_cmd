@@ -168,6 +168,31 @@ class DockerCommunicator:
             DOCKER_CONTAINER_REMOVE + container_id
         )
 
+    def save_image(self, image_id: str, file_name: str) -> None:
+        """
+        Save a Docker image to a file.
+
+        Args:
+            image_id (str): The ID of the Docker image to be saved.
+            file_name (str): The name of the file to save the image to.
+
+        """
+        self.__run_command(
+            DOCKER_SAVE_IMAGE_BY_ID.replace("<file_name>", file_name).replace("<image_id>", image_id)
+        )
+
+    def export_container(self, container_id: str, file_name: str) -> None:
+        """
+        Export a Docker container to a file.
+
+        Args:
+            container_id (str): The ID of the Docker container to be exported.
+            file_name (str): The name of the file to save the container to.
+        """
+        self.__run_command(
+            DOCKER_EXPORT_CONTAINER.replace("<file_name>", file_name).replace("<container_id>", container_id)
+        )
+
 
 docker_communicator = DockerCommunicator()
 

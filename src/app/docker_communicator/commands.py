@@ -12,4 +12,6 @@ DOCKER_VOLUME_REMOVE = "docker volume rm "
 DOCKER_IMAGE_RM = "docker rmi "
 DOCKER_CONTAINERS_IDS = "docker ps -aq"
 DOCKER_VOLUME_IDS = "docker volume ls -aq"
+DOCKER_SAVE_IMAGE_BY_ID = "docker save -o <file_name> <image_id>"
+DOCKER_EXPORT_CONTAINER = "docker export -o <file_name> <container_id>"
 
