@@ -4,7 +4,8 @@ which is used to create a menu table using the curses library in Python.
 """
 import curses
 
-from ..utils.enams import MenuChoice, Colors
+from ..utils.constants import END_OF_LINE, PLUS, DASH, SPACE
+from ..utils.enams import MenuChoice, Colors, MenuChoiceNames
 
 
 class MenuTable:
@@ -12,18 +13,38 @@ class MenuTable:
 
     def __init__(self):
         """Initialize the MenuTable object."""
-        self.choice: int = MenuChoice.IMAGES
+        self.choice: MenuChoice = MenuChoice.IMAGES
+
+        self.choice_names_dict: dict[MenuChoice, MenuChoiceNames] = {
+            MenuChoice.IMAGES: MenuChoiceNames.IMAGES,
+            MenuChoice.CONTAINERS: MenuChoiceNames.CONTAINERS,
+            MenuChoice.VOLUMES: MenuChoiceNames.VOLUMES
+        }
+
+        self.next_choice_dict: dict[MenuChoice, MenuChoice] = {
+            MenuChoice.IMAGES: MenuChoice.CONTAINERS,
+            MenuChoice.CONTAINERS: MenuChoice.VOLUMES,
+            MenuChoice.VOLUMES: MenuChoice.IMAGES
+        }
+
+        self.prev_choice_dict: dict[MenuChoice, MenuChoice] = {
+            value: key for key, value in self.next_choice_dict.items()
+        }
+
+    @property
+    def choice_name(self) -> MenuChoiceNames:
+        return self.choice_names_dict[self.choice]
 
     def is_images(self) -> bool:
         """Check if the current choice is 'Images'."""
         return self.choice == MenuChoice.IMAGES
 
-    def change_choice(self):
+    def change_choice_next(self):
         """Toggle between 'Images' and 'Containers' choices."""
-        if self.is_images():
-            self.choice = MenuChoice.CONTAINERS
-        else:
-            self.choice = MenuChoice.IMAGES
+        self.choice = self.next_choice_dict[self.choice]
+
+    def change_choice_prev(self):
+        self.choice = self.prev_choice_dict[self.choice]
 
     def put_table_on_screen(self, stdscr: curses.window) -> None:
         """
@@ -34,17 +55,13 @@ class MenuTable:
 
         """
         _, width = stdscr.getmaxyx()
-        center = width // 2
 
-        images_color = Colors.WHITE_ON_BLUE if self.is_images() else Colors.WHITE_ON_BLACK
-        containers_color = Colors.WHITE_ON_BLACK if self.is_images() else Colors.WHITE_ON_BLUE
-
-        stdscr.addstr(0, 0, "+" + "-" * (center - 1), curses.color_pair(images_color))
-        stdscr.addstr(0, center, "+" + "-" * (width - 1), curses.color_pair(containers_color))
-        stdscr.addstr("\n")
-        stdscr.addstr(1, 0, "Images" + " " * abs(center - 6), curses.color_pair(images_color))
-        stdscr.addstr(1, center, "Containers" + " " * abs(center - 10), curses.color_pair(containers_color))
-        stdscr.addstr("\n")
+        stdscr.addstr(0, 0, PLUS + DASH * (width - 2) + PLUS, curses.color_pair(Colors.WHITE_ON_BLUE))
+        stdscr.addstr(END_OF_LINE)
+        stdscr.addstr(1, 0, self.choice_name + SPACE * abs(width - len(self.choice_name)), curses.color_pair(Colors.WHITE_ON_BLUE))
+        stdscr.addstr(END_OF_LINE)
+        stdscr.addstr(2, 0, PLUS + DASH * (width - 2) + PLUS, curses.color_pair(Colors.WHITE_ON_BLUE))
+        stdscr.addstr(END_OF_LINE)
 
 
 menu_table = MenuTable()

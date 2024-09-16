@@ -44,3 +44,8 @@ e            -- export docker container to tar file
 """
 
 TAR_ARCHIVE_EXTENSION = ".tar"
+
+PLUS = "+"
+DASH = "-"
+END_OF_LINE = "\n"
+SPACE = " "
