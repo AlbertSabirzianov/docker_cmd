@@ -107,6 +107,24 @@ class DockerCommunicator:
             DOCKER_VOLUME_REMOVE + name
         )
 
+    def tar_volume_by_name(self, name: str, filename: str):
+        """
+        Save a Docker volume to a file.
+
+        Args:
+            name (str): The name of the Docker volume to be exported.
+            filename (str): The name of the file to save the volume to.
+        """
+        self.__run_command(
+            DOCKER_TAR_VOLUME_BY_NAME.replace(
+                "<volume_name>",
+                name
+            ).replace(
+                "<file_name>",
+                filename
+            )
+        )
+
     def cache_clear(self):
         """Clear the cache used for command output."""
         self.__get_output.cache_clear()

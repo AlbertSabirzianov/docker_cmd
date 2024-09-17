@@ -1,35 +1,33 @@
 # docker_cmd
-Консольное приложение для удобного просмотра и взаимодействия с докер образами и контейнерами
-# Как запустить
-Скачайте репозиторий
+A console application for convenient viewing and interaction with Docker objects (images, containers, and volumes).
+# How to Run
+Download the repository:
 ```commandline
 https://github.com/AlbertSabirzianov/docker_cmd.git
 ```
-Если вы используете windows необходимо установить windows-curses, для linux нет никаких зависимостей
+If you are using Windows, you need to install windows-curses. There are no dependencies for Linux:
 ```commandline
 pip install windows-curses
 ```
-Перейдите в папку src
+Go to the src folder:
 ```commandline
 cd docker_cmd/src
 ```
-Запустите приложение
+Run the application:
 ```commandline
 python3 main.py
 ```
-# Инструкция
-Утилита позволяет просматривать, выделять и удалять один или сразу несколько 
-докер образов или контейнеров. Так же есть функционал для сохранения докер образа или контейнера в архив. Используемые клавиши:
+# Instructions
+The utility allows you to view, highlight, and delete one or several Docker objects (images, containers, or volumes) at once. There is also functionality for saving Docker objects to an archive. The keys used are:
 ```text
-LEFT, RIGHT  -- сменить вкладку (с образов на контейнеры и наоборот)
-UP, DOWN     -- передвигать курсор
-SPACE, ENTER -- выделить выбранный образ или контейнер
-d            -- удалить: если выделенных объектов нет - удаляется объект на котором находится курсор, иначе удаляются все выделенные объекты
-r            -- обновить
-q, ESC       -- выход
-h            -- сообщение со всеми доступными командами
-s            -- сохранить выбранный докер образ в tar архив: если выделенных образов нет - сохраняется образ на котором находится курсор, иначе сохраняются все выделенные образы
-e            -- экспортировать содержимое докер контейнера в tar архив: если выделенных контейнеров нет - экспортируется контейнер на котором находится курсор, иначе экспортируются все выделенные контейнеры
+LEFT, RIGHT  -- switch tab (there are 3 tabs in total - images, containers, and volumes)
+UP, DOWN     -- move the cursor
+SPACE, ENTER -- select the chosen object
+d            -- delete: if no objects are selected - the object on which the cursor is located is deleted, otherwise all selected objects are deleted
+r            -- refresh
+q, ESC       -- exit
+h            -- message with all available commands
+s            -- save the selected object to a tar archive: if no objects are selected - the object on which the cursor is located is saved, otherwise all selected objects are saved
 ```
 
 

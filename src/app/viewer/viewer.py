@@ -1,13 +1,20 @@
 """
 Module: viewer
 
-This module provides a Viewer class that represents a viewer for Docker images and containers.
-It provides functionality for displaying and interacting with the Docker images and containers in a terminal window.
+The viewer module provides a Viewer class for managing and interacting with
+Docker images, containers, and volumes. It provides functionality to display
+information about Docker entities and manipulate them through the terminal.
+
+The Viewer class uses DockerCommunicator for Docker operations and MenuTable
+for terminal-based user interaction. It maintains indexes and lists for tracking
+Docker entities and user choices. A variety of dictionaries are used for
+mapping user choices to appropriate methods, indexes, and lists.
 """
 import curses
 import platform
-from typing import Callable
+from typing import Callable, Tuple
 
+from .index import ObjIndex
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable
@@ -33,9 +40,9 @@ class Viewer:
         self.docker_communicator: DockerCommunicator = docker_communicator
         self.menu_table: MenuTable = menu_table
 
-        self.image_index: int = 0
-        self.container_index: int = 0
-        self.volume_index: int = 0
+        self.image_index: ObjIndex = ObjIndex()
+        self.container_index: ObjIndex = ObjIndex()
+        self.volume_index: ObjIndex = ObjIndex()
 
         self.underlined_images: list[int] = list()
         self.underlined_containers: list[int] = list()
@@ -51,10 +58,20 @@ class Viewer:
             MenuChoice.CONTAINERS: self.docker_communicator.delete_container,
             MenuChoice.VOLUMES: self.docker_communicator.delete_volume_by_name
         }
+        self.choice_save_func_dict: dict[MenuChoice, Callable] = {
+            MenuChoice.IMAGES: self.docker_communicator.save_image,
+            MenuChoice.CONTAINERS: self.docker_communicator.export_container,
+            MenuChoice.VOLUMES: self.docker_communicator.tar_volume_by_name
+        }
         self.choice_underlines_dict: dict[MenuChoice, list[int]] = {
             MenuChoice.IMAGES: self.underlined_images,
             MenuChoice.CONTAINERS: self.underlined_containers,
             MenuChoice.VOLUMES: self.underlined_volumes
+        }
+        self.choice_index_dict: dict[MenuChoice, ObjIndex] = {
+            MenuChoice.IMAGES: self.image_index,
+            MenuChoice.CONTAINERS: self.container_index,
+            MenuChoice.VOLUMES: self.volume_index
         }
         self.choice_id_index_dict: dict[MenuChoice, IdIndexes] = {
             MenuChoice.IMAGES: IdIndexes.IMAGE_ID_INDEX,
@@ -66,6 +83,11 @@ class Viewer:
             MenuChoice.CONTAINERS: NameIndexes.CONTAINER_NAME_INDEX,
             MenuChoice.VOLUMES: NameIndexes.VOLUME_NAME_INDEX
         }
+        self.index_number_of_objects_func_list: list[Tuple[ObjIndex, Callable]] = [
+            (self.image_index, self.get_number_of_images),
+            (self.container_index, self.get_number_of_containers),
+            (self.volume_index, self.get_number_of_volumes)
+        ]
         self.key_steps_dict: dict[int, Steps] = {
             curses.KEY_DOWN: Steps.STEP_DOWN,
             curses.KEY_UP: Steps.STEP_UP
@@ -110,41 +132,30 @@ class Viewer:
 
     def check_indexes(self):
         """
-        Checks and adjusts the image and container indexes to ensure they are within valid ranges.
+        Checks and adjusts the selected Docker entity indexes to ensure they are within valid ranges.
         """
-        if self.image_index < 0 or self.image_index > self.get_number_of_images() - 3:
-            self.image_index = 0
-        if (
-                self.container_index < 0
-                or self.container_index > self.get_number_of_containers() - 3
-        ):
-            self.container_index = 0
-        if self.volume_index < 0 or self.volume_index > self.get_number_of_volumes() -3:
-            self.volume_index = 0
+        for ind, func in self.index_number_of_objects_func_list:
+            if ind.value < 0 or ind.value > func() - 3:
+                ind.clear()
 
     def update(self):
         """
-        Updates the viewer by clearing the cache, resetting the image and container indexes,
-        and clearing the underlined images and containers.
+        Updates the viewer by clearing the cache,
+        resetting the selected Docker entity indexes,
+        and clearing the underlined images, containers and volumes.
         """
         self.docker_communicator.cache_clear()
-        self.image_index = 0
-        self.container_index = 0
-        self.volume_index = 0
+        self.image_index.clear()
+        self.container_index.clear()
+        self.volume_index.clear()
 
-        self.underlined_images = list()
-        self.underlined_containers = list()
-        self.underlined_volumes = list()
-
-        self.choice_underlines_dict: dict[MenuChoice, list[int]] = {
-            MenuChoice.IMAGES: self.underlined_images,
-            MenuChoice.CONTAINERS: self.underlined_containers,
-            MenuChoice.VOLUMES: self.underlined_volumes
-        }
+        self.underlined_images.clear()
+        self.underlined_containers.clear()
+        self.underlined_volumes.clear()
 
     def get_tables(self) -> str:
         """
-        Gets the tables of Docker images or containers.
+        Gets the tables of the selected Docker entity based on the current choice.
 
         Returns:
         - A string representation of the Docker images or containers table.
@@ -153,19 +164,14 @@ class Viewer:
 
     def change_index(self, char: int) -> None:
         """
-        Changes the image or container index based on the given character input.
+        Changes the selected Docker entity index based on the given character input.
 
         Parameters:
         - char: An integer representing the character input from the user.
         """
-        step = self.key_steps_dict[char]
-
-        if self.is_images():
-            self.image_index += step
-        elif self.is_containers():
-            self.container_index += step
-        else:
-            self.volume_index += step
+        step: int = self.key_steps_dict[char]
+        index: ObjIndex = self.choice_index_dict[self.menu_table.choice]
+        index.value += step
 
     def is_images(self) -> bool:
         """
@@ -194,21 +200,26 @@ class Viewer:
         """
         return self.menu_table.choice == MenuChoice.VOLUMES
 
-    def get_index(self):
-        if self.is_images():
-            return self.image_index
-        elif self.is_containers():
-            return self.container_index
-        else:
-            return self.volume_index
+    def get_index(self) -> int:
+        """
+        Retrieve the index corresponding to the currently selected choice in the menu.
+
+        This method accesses the `choice_index_dict` using the current choice from
+        the `menu_table`. It returns the value associated with the selected choice,
+        which represents the index of that choice.
+
+        Returns:
+            int: The index of the currently selected choice.
+        """
+        return self.choice_index_dict[self.menu_table.choice].value
 
     def put_main_table(self):
         """
-        Displays the main table of Docker images or containers in the terminal window.
+        Displays the main table of the selected Docker entity based on the current choice in the terminal window.
         """
         tables: list[str] = self.get_tables().split(END_OF_LINE)
-        cursor_index =  self.get_index()
-        underline_indexes = self.choice_underlines_dict[self.menu_table.choice]
+        cursor_index: int = self.get_index()
+        underline_indexes: list[int] = self.choice_underlines_dict[self.menu_table.choice]
 
         height, width = self.stdscr.getmaxyx()
         headers = tables.pop(0)
@@ -236,7 +247,7 @@ class Viewer:
 
     def add_underline(self):
         """
-        Adds or removes an underline to the currently selected image or container.
+        Adds or removes an underline to the currently selected Docker entity based on the current choice.
         """
         index = self.get_index()
         underlined = self.choice_underlines_dict[self.menu_table.choice]
@@ -248,13 +259,13 @@ class Viewer:
 
     def get_id_by_index(self, index: int):
         """
-        Gets the ID of the Docker image or container at the given index.
+        Gets the ID of the selected Docker entity based on the current choice at the given index.
 
         Parameters:
         - index: An integer representing the index of the Docker image or container.
 
         Returns:
-        - The ID of the Docker image or container at the given index.
+        - The ID of the selected Docker entity based on the current choice at the given index.
         """
         tables: list[str] = self.get_tables().split(END_OF_LINE)
         tables.pop(0)
@@ -268,13 +279,13 @@ class Viewer:
 
     def get_name_by_index(self, index: int):
         """
-        Gets the name of the Docker image or container at the given index.
+        Gets the name of the selected Docker entity based on the current choice in the menu at the given index.
 
         Parameters:
         - index: An integer representing the index of the Docker image or container.
 
         Returns:
-        - The name of the Docker image or container at the given index.
+        - The name of the selected Docker entity based on the current choice at the given index.
         """
         tables: list[str] = self.get_tables().split(END_OF_LINE)
         tables.pop(0)
@@ -288,7 +299,7 @@ class Viewer:
 
     def delete(self):
         """
-        Deletes the selected Docker image or container.
+        Deletes the selected Docker entity based on the current choice in the menu.
         """
         index: int = self.get_index()
         underlines: list[int] = self.choice_underlines_dict[self.menu_table.choice]
@@ -305,28 +316,26 @@ class Viewer:
                         self.get_id_by_index(under_index)
                     )
 
-    def save_image(self):
+    def save(self):
         """
-        Saves the Docker image specified by the `image_index` attribute to a tar archive file.
-        """
-        indexes = self.underlined_images if self.underlined_images else [self.image_index]
-        for index in indexes:
-            try:
-                self.docker_communicator.save_image(
-                    self.get_id_by_index(index),
-                    self.get_name_by_index(index) + TAR_ARCHIVE_EXTENSION
-                )
-            except TypeError:
-                continue
+        Save the selected Docker entity based on the current choice in the menu.
 
-    def export_container(self):
+        This method retrieves the indexes associated with the currently selected choice
+        from the `choice_underlines_dict`. If no indexes are found, it defaults to using
+        the index obtained from the `get_index` method. For each index, it attempts to
+        call the corresponding save function from `choice_save_func_dict`, passing the
+        entity's ID and name (appended with a TAR archive extension) as arguments.
+
+        If a TypeError occurs during the save operation, it is caught and ignored.
+
+        This method does not return any value.
         """
-        Exports the Docker container specified by the `container_index` attribute to a tar archive file.
-        """
-        indexes = self.underlined_containers if self.underlined_containers else [self.container_index]
+        indexes = self.choice_underlines_dict[self.menu_table.choice]
+        if not indexes:
+            indexes = [self.get_index()]
         for index in indexes:
             try:
-                self.docker_communicator.export_container(
+                self.choice_save_func_dict[self.menu_table.choice](
                     self.get_id_by_index(index),
                     self.get_name_by_index(index) + TAR_ARCHIVE_EXTENSION
                 )
@@ -350,6 +359,7 @@ class Viewer:
 
                 if char in (KEY_EXIT, KEY_ESC):
                     return
+
                 if char == curses.KEY_RIGHT:
                     menu_table.change_choice_next()
                 if char == curses.KEY_LEFT:
@@ -377,17 +387,11 @@ class Viewer:
                     self.stdscr.refresh()
                     self.stdscr.getch()
 
-                if char == KEY_SAVE and self.is_images():
+                if char == KEY_SAVE:
                     self.stdscr.clear()
                     self.stdscr.addstr(ICON)
                     self.stdscr.refresh()
-                    self.save_image()
-
-                if char == KEY_EXPORT and not self.is_images():
-                    self.stdscr.clear()
-                    self.stdscr.addstr(ICON)
-                    self.stdscr.refresh()
-                    self.export_container()
+                    self.save()
 
                 self.check_indexes()
 

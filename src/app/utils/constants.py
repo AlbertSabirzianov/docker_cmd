@@ -32,15 +32,14 @@ ICON = """
 HELP_TEXT = """
 
 
-LEFT, RIGHT  -- change tab
-UP, DOWN     -- move cursor
-SPACE, ENTER -- highlight
-d            -- delete
+LEFT, RIGHT  -- switch tab (there are 3 tabs in total - images, containers, and volumes)
+UP, DOWN     -- move the cursor
+SPACE, ENTER -- select the chosen object
+d            -- delete the selected Docker entity
 r            -- refresh
 q, ESC       -- exit
 h            -- help
-s            -- save docker image to tar file
-e            -- export docker container to tar file
+s            -- save the selected Docker entity to tar file
 """
 
 TAR_ARCHIVE_EXTENSION = ".tar"

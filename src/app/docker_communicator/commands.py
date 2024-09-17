@@ -14,4 +14,6 @@ DOCKER_CONTAINERS_IDS = "docker ps -aq"
 DOCKER_VOLUME_IDS = "docker volume ls -aq"
 DOCKER_SAVE_IMAGE_BY_ID = "docker save -o <file_name> <image_id>"
 DOCKER_EXPORT_CONTAINER = "docker export -o <file_name> <container_id>"
-
+DOCKER_TAR_VOLUME_BY_NAME = """
+docker run --rm -v <volume_name>:/volume -v $(pwd):/backup alpine tar cvf /backup/<file_name> -C /volume .
+"""
