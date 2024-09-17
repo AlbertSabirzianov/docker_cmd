@@ -33,6 +33,16 @@ class MenuTable:
 
     @property
     def choice_name(self) -> MenuChoiceNames:
+        """
+        Get the name of the current choice.
+
+        This property retrieves the name associated with the current choice
+        from the choice name's dictionary. It provides a way to access the
+        human-readable name of the selected menu option.
+
+        Returns:
+            MenuChoiceNames: The name of the current choice.
+        """
         return self.choice_names_dict[self.choice]
 
     def is_images(self) -> bool:
@@ -40,10 +50,23 @@ class MenuTable:
         return self.choice == MenuChoice.IMAGES
 
     def change_choice_next(self):
-        """Toggle between 'Images' and 'Containers' choices."""
+        """
+        Toggle to the next choice in the selection.
+
+        This method updates the current choice to the next one in the
+        predefined dictionary of choices. It cycles between 'Images'
+        and 'Containers'.
+        """
         self.choice = self.next_choice_dict[self.choice]
 
     def change_choice_prev(self):
+        """
+        Toggle to the previous choice in the selection.
+
+        This method updates the current choice to the previous one in the
+        predefined dictionary of choices. It allows the user to navigate
+        back through the available options.
+        """
         self.choice = self.prev_choice_dict[self.choice]
 
     def put_table_on_screen(self, stdscr: curses.window) -> None:

@@ -1,13 +1,7 @@
 """
 Module: enums
 
-This module defines two Enum classes: Colors and MenuChoice.
-
-Colors:
-    An enumeration of color options with corresponding integer values.
-
-MenuChoice:
-    An enumeration of menu choices with corresponding integer values.
+This module defines Enum classes
 """
 from enum import Enum
 
@@ -51,6 +45,7 @@ class MenuChoiceNames(str, Enum):
     IMAGES = "Images"
     CONTAINERS = "Containers"
     VOLUMES = "Volumes"
+
 
 class OperatingSystems(str, Enum):
     """An enumeration of Operating systems with corresponding string values."""
