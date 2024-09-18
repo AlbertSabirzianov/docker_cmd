@@ -135,8 +135,11 @@ class Viewer:
         Checks and adjusts the selected Docker entity indexes to ensure they are within valid ranges.
         """
         for ind, func in self.index_number_of_objects_func_list:
-            if ind.value < 0 or ind.value > func() - 3:
+            last_index = func() - 3
+            if ind.value > last_index:
                 ind.clear()
+            if ind.value < 0:
+                ind.value = last_index
 
     def update(self):
         """
