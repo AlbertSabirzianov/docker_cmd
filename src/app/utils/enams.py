@@ -66,3 +66,7 @@ class Extensions(str, Enum):
     TAR_EXTENSION = ".tar"
     JSON_EXTENSION = ".json"
 
+
+class DockerApiEndpoints(str, Enum):
+    DOCKER_REPOSITORIES_ENDPOINT = "https://hub.docker.com/v2/search/repositories/?query={search_term}"
+    DOCKER_TAGS_ENDPOINT = "https://hub.docker.com/v2/repositories/{username}/{repository}/tags/"
