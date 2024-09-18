@@ -19,7 +19,7 @@ from ..docker_communicator.docker_comunicator import docker_communicator, Docker
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable
 from ..utils.constants import *
-from ..utils.enams import Colors, OperatingSystems, MenuChoice, IdIndexes, NameIndexes, Steps
+from ..utils.enams import Colors, OperatingSystems, MenuChoice, IdIndexes, NameIndexes, Steps, Extensions
 
 
 class Viewer:
@@ -337,10 +337,54 @@ class Viewer:
             try:
                 self.choice_save_func_dict[self.menu_table.choice](
                     self.get_id_by_index(index),
-                    self.get_name_by_index(index) + TAR_ARCHIVE_EXTENSION
+                    self.get_name_by_index(index) + Extensions.TAR_EXTENSION
                 )
             except TypeError:
                 continue
+
+    def inspect(self):
+        """
+        Inspects Docker objects based on user selection from a menu.
+
+        This method retrieves the indexes of the selected choice from the
+        `choice_underlines_dict`. If no indexes are found, it defaults to
+        getting a single index using `get_index()`. For each index, it
+        attempts to call the `inspect` method of the `docker_communicator`
+        with the corresponding Docker ID and name, appending a JSON
+        extension to the name. If a TypeError occurs during this process,
+        it is caught and the loop continues to the next index.
+        """
+        indexes =self.choice_underlines_dict[self.menu_table.choice]
+        if not indexes:
+            indexes = [self.get_index()]
+        for index in indexes:
+            try:
+                self.docker_communicator.inspect(
+                    self.get_id_by_index(index),
+                    self.get_name_by_index(index) + Extensions.JSON_EXTENSION
+                )
+            except TypeError:
+                continue
+
+    def icon_to_screen(self, help_text: bool = False):
+        """
+        Displays an icon on the screen and optionally adds help text.
+
+        This method clears the current content of the screen and adds
+        the specified icon to the screen. If the `help_text` parameter
+        is set to True, it also adds additional help text below the icon.
+        After updating the screen with the new content, it refreshes
+        the display to show the icon and any help text.
+
+        Args:
+            help_text (bool): A flag indicating whether to display
+                              additional help text. Defaults to False.
+        """
+        self.stdscr.clear()
+        self.stdscr.addstr(ICON)
+        if help_text:
+            self.stdscr.addstr(HELP_TEXT)
+        self.stdscr.refresh()
 
     def run(self):
         """
@@ -374,24 +418,24 @@ class Viewer:
                     self.add_underline()
 
                 if char == KEY_DELETE:
-                    self.stdscr.clear()
-                    self.stdscr.addstr(ICON)
-                    self.stdscr.refresh()
+                    self.icon_to_screen()
                     self.delete()
                     self.update()
 
                 if char == KEY_HELP:
-                    self.stdscr.clear()
-                    self.stdscr.addstr(ICON)
-                    self.stdscr.addstr(HELP_TEXT)
-                    self.stdscr.refresh()
+                    self.icon_to_screen(help_text=True)
                     self.stdscr.getch()
 
                 if char == KEY_SAVE:
-                    self.stdscr.clear()
-                    self.stdscr.addstr(ICON)
-                    self.stdscr.refresh()
+                    self.icon_to_screen()
                     self.save()
+
+                if char == KEY_INSPECT and self.menu_table.choice in (
+                    MenuChoice.IMAGES,
+                    MenuChoice.CONTAINERS
+                ):
+                    self.icon_to_screen()
+                    self.inspect()
 
                 self.check_indexes()
 
@@ -407,3 +451,5 @@ class Viewer:
                 self.stdscr.refresh()
                 self.stdscr.getch()
                 return
+
+

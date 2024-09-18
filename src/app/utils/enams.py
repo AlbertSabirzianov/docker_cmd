@@ -52,3 +52,17 @@ class OperatingSystems(str, Enum):
     WINDOWS = "Windows"
     LINUX = "Linux"
     JAVA = "Java"
+
+
+class Extensions(str, Enum):
+    """
+    An enumeration for file extensions.
+
+    This class defines a set of string-based constants representing
+    common file extensions used in the application. It inherits from
+    both `str` and `Enum`, allowing the members to be used as strings
+    while also providing the benefits of enumeration.
+    """
+    TAR_EXTENSION = ".tar"
+    JSON_EXTENSION = ".json"
+

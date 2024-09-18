@@ -28,6 +28,7 @@ r            -- refresh
 q, ESC       -- exit
 h            -- message with all available commands
 s            -- save the selected object to a tar archive: if no objects are selected - the object on which the cursor is located is saved, otherwise all selected objects are saved
+i            -- inspect the selected images or containers in json file: if no objects are selected - the object on which the cursor is located is saved, otherwise all selected objects are inspected
 ```
 
 
