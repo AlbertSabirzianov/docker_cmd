@@ -347,15 +347,18 @@ class Viewer(ABSViewer):
         """
         Inspects a Docker container or Image and displays its details in a viewer.
         """
-        js_obj: str = self.docker_communicator.inspect(
-            self.get_id_by_index(self.get_index()),
-        )
-        inspect_viewer = InspectViewer(
-            screen=self.stdscr,
-            tables_in_json=js_obj,
-            obj_name=self.get_name_by_index(self.get_index())
-        )
-        inspect_viewer.run()
+        try:
+            js_obj: str = self.docker_communicator.inspect(
+                self.get_id_by_index(self.get_index()),
+            )
+            inspect_viewer = InspectViewer(
+                screen=self.stdscr,
+                tables_in_json=js_obj,
+                obj_name=self.get_name_by_index(self.get_index())
+            )
+            inspect_viewer.run()
+        except TypeError:
+            return
 
     def icon_to_screen(self, help_text: bool = False):
         """
