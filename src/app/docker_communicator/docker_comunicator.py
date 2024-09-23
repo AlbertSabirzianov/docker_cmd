@@ -7,7 +7,7 @@ It also defines a custom exception class called DockerNotRunningError, which is 
 import functools
 import subprocess
 
-from .commands import *
+from ..utils.commands import *
 from ..exeptions.exeptions import DockerNotRunningError
 
 
