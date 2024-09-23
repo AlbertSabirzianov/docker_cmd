@@ -14,7 +14,7 @@ import curses
 import platform
 from typing import Callable, Tuple
 
-from .index import ObjIndex
+from ..utils.index import ObjIndex
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable
