@@ -17,4 +17,4 @@ DOCKER_EXPORT_CONTAINER = "docker export -o <file_name> <container_id>"
 DOCKER_TAR_VOLUME_BY_NAME = """
 docker run --rm -v <volume_name>:/volume -v $(pwd):/backup alpine tar cvf /backup/<file_name> -C /volume .
 """
-DOCKER_INSPECT_BY_ID = "docker inspect <id> > <file_name>"
+DOCKER_INSPECT_BY_ID = "docker inspect <id>"

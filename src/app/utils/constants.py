@@ -3,6 +3,10 @@ Module: constants
 
 This module provides constants related to Docker commands and key codes.
 """
+import curses
+
+from ..utils.enams import Steps
+
 KEY_EXIT = ord('q')
 KEY_ESC = 27
 KEY_REFRESH = ord('r')
@@ -48,3 +52,9 @@ PLUS = "+"
 DASH = "-"
 END_OF_LINE = "\n"
 SPACE = " "
+EMPTY_STRING = ""
+
+KEY_STEPS_DICT: dict[int, Steps] = {
+    curses.KEY_DOWN: Steps.STEP_DOWN,
+    curses.KEY_UP: Steps.STEP_UP
+}

@@ -4,11 +4,12 @@ which is used to create a menu table using the curses library in Python.
 """
 import curses
 
-from ..utils.constants import END_OF_LINE, PLUS, DASH, SPACE
-from ..utils.enams import MenuChoice, Colors, MenuChoiceNames
+
+from ..utils.enams import MenuChoice, MenuChoiceNames
+from ..utils.mixins import MenuMixin
 
 
-class MenuTable:
+class MenuTable(MenuMixin):
     """A class representing a menu table in a terminal using curses."""
 
     def __init__(self):
@@ -77,14 +78,7 @@ class MenuTable:
             stdscr (curses.window): The main window object.
 
         """
-        _, width = stdscr.getmaxyx()
-
-        stdscr.addstr(0, 0, PLUS + DASH * (width - 2) + PLUS, curses.color_pair(Colors.WHITE_ON_BLUE))
-        stdscr.addstr(END_OF_LINE)
-        stdscr.addstr(1, 0, self.choice_name + SPACE * abs(width - len(self.choice_name)), curses.color_pair(Colors.WHITE_ON_BLUE))
-        stdscr.addstr(END_OF_LINE)
-        stdscr.addstr(2, 0, PLUS + DASH * (width - 2) + PLUS, curses.color_pair(Colors.WHITE_ON_BLUE))
-        stdscr.addstr(END_OF_LINE)
+        self.put_head_menu(stdscr, self.choice_name)
 
 
 menu_table = MenuTable()

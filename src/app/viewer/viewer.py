@@ -10,17 +10,17 @@ for terminal-based user interaction. It maintains indexes and lists for tracking
 Docker entities and user choices. A variety of dictionaries are used for
 mapping user choices to appropriate methods, indexes, and lists.
 """
-import curses
 import platform
 from typing import Callable, Tuple
 
 from .base import ABSViewer
-from ..utils.index import ObjIndex
+from .inspect_viewer import InspectViewer
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable
 from ..utils.constants import *
 from ..utils.enams import Colors, OperatingSystems, MenuChoice, IdIndexes, NameIndexes, Steps, Extensions
+from ..utils.index import ObjIndex
 
 
 class Viewer(ABSViewer):
@@ -89,10 +89,7 @@ class Viewer(ABSViewer):
             (self.container_index, self.get_number_of_containers),
             (self.volume_index, self.get_number_of_volumes)
         ]
-        self.key_steps_dict: dict[int, Steps] = {
-            curses.KEY_DOWN: Steps.STEP_DOWN,
-            curses.KEY_UP: Steps.STEP_UP
-        }
+        self.key_steps_dict: dict[int, Steps] = KEY_STEPS_DICT
 
     @staticmethod
     def is_windows() -> bool:
@@ -348,27 +345,17 @@ class Viewer(ABSViewer):
 
     def inspect(self):
         """
-        Inspects Docker objects based on user selection from a menu.
-
-        This method retrieves the indexes of the selected choice from the
-        `choice_underlines_dict`. If no indexes are found, it defaults to
-        getting a single index using `get_index()`. For each index, it
-        attempts to call the `inspect` method of the `docker_communicator`
-        with the corresponding Docker ID and name, appending a JSON
-        extension to the name. If a TypeError occurs during this process,
-        it is caught and the loop continues to the next index.
+        Inspects a Docker container or Image and displays its details in a viewer.
         """
-        indexes =self.choice_underlines_dict[self.menu_table.choice]
-        if not indexes:
-            indexes = [self.get_index()]
-        for index in indexes:
-            try:
-                self.docker_communicator.inspect(
-                    self.get_id_by_index(index),
-                    self.get_name_by_index(index) + Extensions.JSON_EXTENSION
-                )
-            except TypeError:
-                continue
+        js_obj: str = self.docker_communicator.inspect(
+            self.get_id_by_index(self.get_index()),
+        )
+        inspect_viewer = InspectViewer(
+            screen=self.stdscr,
+            tables_in_json=js_obj,
+            obj_name=self.get_name_by_index(self.get_index())
+        )
+        inspect_viewer.run()
 
     def icon_to_screen(self, help_text: bool = False):
         """

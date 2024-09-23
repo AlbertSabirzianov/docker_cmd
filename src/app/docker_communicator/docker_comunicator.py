@@ -211,24 +211,16 @@ class DockerCommunicator:
             DOCKER_EXPORT_CONTAINER.replace("<file_name>", file_name).replace("<container_id>", container_id)
         )
 
-    def inspect(self, container_or_image_id: str, file_name: str):
+    def inspect(self, container_or_image_id: str) -> str:
         """
-        Inspects a Docker container or image and saves the output to a specified file.
+        Get inspect information about Docker image or container by id.
 
-        This method constructs a command to run the `docker inspect`
-        command using the provided container or image ID and the desired
-        output file name. It replaces placeholders in the command string
-        with the actual values and executes the command to retrieve
-        detailed information about the specified Docker object.
+        Returns:
+            str: Inspect information of Image or Container.
 
-        Args:
-            container_or_image_id (str): The ID or name of the Docker
-                                          container or image to inspect.
-            file_name (str): The name of the file where the inspection
-                             output will be saved.
         """
-        self.__run_command(
-            DOCKER_INSPECT_BY_ID.replace("<file_name>", file_name).replace("<id>", container_or_image_id)
+        return self.__get_output(
+            DOCKER_INSPECT_BY_ID.replace("<id>", container_or_image_id)
         )
 
 
