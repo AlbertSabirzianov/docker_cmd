@@ -29,6 +29,7 @@ q, ESC       -- exit
 h            -- message with all available commands
 s            -- save the selected object to a tar archive: if no objects are selected - the object on which the cursor is located is saved, otherwise all selected objects are saved
 i            -- view the inspect information of the selected image or container
+n            -- rename the selected object
 ```
 
 

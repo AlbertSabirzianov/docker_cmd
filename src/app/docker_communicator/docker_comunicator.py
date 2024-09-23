@@ -48,6 +48,88 @@ class DockerCommunicator:
         """
         subprocess.run(command, shell=True, check=False, stdout=subprocess.DEVNULL)
 
+    def image_rename(self, old_name: str, new_name: str) -> None:
+        """
+        Renames a Docker image from the old name to the new name.
+
+        This method constructs a command to rename a Docker image using the
+        specified old and new names, and then executes that command.
+
+        Args:
+            old_name (str): The current name of the Docker image to be renamed.
+            new_name (str): The new name for the Docker image.
+        """
+        self.__run_command(
+            DOCKER_IMAGE_RENAME.replace(
+                "<old_name>",
+                old_name
+            ).replace(
+                "<new_name>",
+                new_name
+            )
+        )
+
+    def container_rename(self, old_name: str, new_name: str) -> None:
+        """
+        Renames a Docker container from the old name to the new name.
+
+        This method constructs a command to rename a Docker container using the
+        specified old and new names, and then executes that command.
+
+        Args:
+            old_name (str): The current name of the Docker container to be renamed.
+            new_name (str): The new name for the Docker container.
+        """
+        self.__run_command(
+            DOCKER_CONTAINER_RENAME.replace(
+                "<old_name>",
+                old_name
+            ).replace(
+                "<new_name>",
+                new_name
+            )
+        )
+
+    def create_new_volume(self, new_name: str) -> None:
+        """
+        Creates a new Docker volume with the specified name.
+
+        This method constructs a command to create a new Docker volume and
+        executes that command.
+
+        Args:
+            new_name (str): The name for the new Docker volume to be created.
+        """
+        self.__run_command(
+            DOCKER_VOLUME_CREATE.replace(
+                "<new_name>",
+                new_name
+            )
+        )
+
+    def volume_rename(self, old_name: str, new_name: str) -> None:
+        """
+        Renames a Docker volume from the old name to the new name.
+
+        This method first creates a new volume with the new name, then copies
+        the data from the old volume to the new volume, and finally removes
+        the old volume.
+
+        Args:
+            old_name (str): The current name of the Docker volume to be renamed.
+            new_name (str): The new name for the Docker volume.
+        """
+        self.create_new_volume(new_name)
+        self.__run_command(
+            DOCKER_VOLUME_COPY.replace(
+                "<old_name>",
+                old_name
+            ).replace(
+                "<new_name>",
+                new_name
+            )
+        )
+
     def check_version(self) -> str:
         """
         Check the version of Docker.

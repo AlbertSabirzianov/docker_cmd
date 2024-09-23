@@ -14,6 +14,7 @@ import platform
 from typing import Callable, Tuple
 
 from .base import ABSViewer
+from .get_new_name_viewer import GetNewNameViewer
 from .inspect_viewer import InspectViewer
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
@@ -83,6 +84,11 @@ class Viewer(ABSViewer):
             MenuChoice.IMAGES: NameIndexes.IMAGE_NAME_INDEX,
             MenuChoice.CONTAINERS: NameIndexes.CONTAINER_NAME_INDEX,
             MenuChoice.VOLUMES: NameIndexes.VOLUME_NAME_INDEX
+        }
+        self.choice_rename_unc_dict: dict[MenuChoice, Callable] = {
+            MenuChoice.IMAGES: self.docker_communicator.image_rename,
+            MenuChoice.CONTAINERS: self.docker_communicator.container_rename,
+            MenuChoice.VOLUMES: self.docker_communicator.volume_rename
         }
         self.index_number_of_objects_func_list: list[Tuple[ObjIndex, Callable]] = [
             (self.image_index, self.get_number_of_images),
@@ -360,6 +366,35 @@ class Viewer(ABSViewer):
         except TypeError:
             return
 
+    def rename(self):
+        """
+        Renames an object based on user input.
+
+        This method displays a viewer to get a new name from the user. It retrieves
+        the current name of the object based on the selected index and attempts to
+        rename it using the appropriate renaming function from the dictionary of
+        rename functions. If the renaming is successful, it updates the display.
+
+        Raises:
+            TypeError: If the renaming function is not callable or if there is an issue
+            with the provided names.
+        """
+        get_new_name_viewer = GetNewNameViewer(
+            screen=self.stdscr,
+            obj_name=self.get_name_by_index(self.get_index())
+        )
+        new_name_ = get_new_name_viewer.run()
+        if new_name_:
+            try:
+                func = self.choice_rename_unc_dict[self.menu_table.choice]
+                func(
+                    self.get_name_by_index(self.get_index()),
+                    new_name_
+                )
+                self.update()
+            except TypeError:
+                return
+
     def icon_to_screen(self, help_text: bool = False):
         """
         Displays an icon on the screen and optionally adds help text.
@@ -430,6 +465,9 @@ class Viewer(ABSViewer):
                 ):
                     self.icon_to_screen()
                     self.inspect()
+
+                if char == KEY_RENAME:
+                    self.rename()
 
                 self.check_indexes()
 

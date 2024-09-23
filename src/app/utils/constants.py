@@ -15,8 +15,8 @@ KEY_SPASE = ord(" ")
 KEY_DELETE = ord("d")
 KEY_HELP = ord("h")
 KEY_SAVE = ord("s")
-KEY_EXPORT = ord("e")
 KEY_INSPECT = ord("i")
+KEY_RENAME = ord("n")
 
 INVISIBLE = 0
 DOCKER_NOT_INSTALL_TEXT = (
@@ -46,13 +46,18 @@ q, ESC       -- exit
 h            -- message with all available commands
 s            -- save the selected object to a tar archive: if no objects are selected - the object on which the cursor is located is saved, otherwise all selected objects are saved
 i            -- view the inspect information of the selected image or container
+n            -- rename the selected object
 """
+START_TYPE_NAME = "Start Type New Name..."
 
 PLUS = "+"
 DASH = "-"
 END_OF_LINE = "\n"
 SPACE = " "
 EMPTY_STRING = ""
+UNDERSCORE = "_"
+CURS = ">"
+
 
 KEY_STEPS_DICT: dict[int, Steps] = {
     curses.KEY_DOWN: Steps.STEP_DOWN,
