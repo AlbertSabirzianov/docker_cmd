@@ -14,6 +14,7 @@ import curses
 import platform
 from typing import Callable, Tuple
 
+from .base import ABSViewer
 from ..utils.index import ObjIndex
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
@@ -22,7 +23,7 @@ from ..utils.constants import *
 from ..utils.enams import Colors, OperatingSystems, MenuChoice, IdIndexes, NameIndexes, Steps, Extensions
 
 
-class Viewer:
+class Viewer(ABSViewer):
     """
     The Viewer class represents a viewer for Docker images and containers.
     """
@@ -453,6 +454,9 @@ class Viewer:
                 self.stdscr.addstr(DOCKER_NOT_INSTALL_TEXT)
                 self.stdscr.refresh()
                 self.stdscr.getch()
+                return
+
+            except KeyboardInterrupt:
                 return
 
 
