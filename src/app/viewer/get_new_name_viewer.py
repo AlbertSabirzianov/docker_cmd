@@ -70,11 +70,11 @@ class GetNewNameViewer(ABSViewer, MenuMixin):
                 if char == KEY_ENTER:
                     return self.new_name.replace(SPACE, UNDERSCORE)
                 if char == KEY_ESC:
-                    return ""
+                    return EMPTY_STRING
                 if char == curses.KEY_BACKSPACE:
                     self.backspace()
                 else:
                     self.add_char(char=chr(char))
 
             except KeyboardInterrupt:
-                return ""
+                return EMPTY_STRING

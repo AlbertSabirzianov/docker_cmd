@@ -7,3 +7,8 @@ This class can be used to raise an exception when docker not running on machine.
 class DockerNotRunningError(Exception):
     """Custom exception class to indicate that Docker is not running."""
     pass
+
+
+class DockerApiError(Exception):
+    """Custom exception class to indicate that DockerApi is not allowed."""
+    pass

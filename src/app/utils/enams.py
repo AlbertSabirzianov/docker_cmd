@@ -68,5 +68,15 @@ class Extensions(str, Enum):
 
 
 class DockerApiEndpoints(str, Enum):
-    DOCKER_REPOSITORIES_ENDPOINT = "https://hub.docker.com/v2/search/repositories/?query={search_term}"
+    """Enumeration of Docker API endpoints."""
+    DOCKER_REPOSITORIES_ENDPOINT = "https://hub.docker.com/v2/search/repositories/"
     DOCKER_TAGS_ENDPOINT = "https://hub.docker.com/v2/repositories/{username}/{repository}/tags/"
+
+
+class QueryParams(str, Enum):
+    """Enumeration of common query parameters for API requests."""
+    QUERY = "query"
+    PAGE = "page"
+    PAGE_SIZE = "page_size"
+
+
