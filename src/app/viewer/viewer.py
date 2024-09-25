@@ -16,6 +16,7 @@ from typing import Callable, Tuple
 from .base import ABSViewer
 from .get_new_name_viewer import GetNewNameViewer
 from .inspect_viewer import InspectViewer
+from .search_image_viewer import SearchImageViewer
 from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable
@@ -468,6 +469,12 @@ class Viewer(ABSViewer):
 
                 if char == KEY_RENAME:
                     self.rename()
+
+                if char == KEY_PULL:
+                    search_viewer = SearchImageViewer(
+                        screen=self.stdscr
+                    )
+                    search_viewer.run()
 
                 self.check_indexes()
 

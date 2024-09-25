@@ -17,6 +17,7 @@ KEY_HELP = ord("h")
 KEY_SAVE = ord("s")
 KEY_INSPECT = ord("i")
 KEY_RENAME = ord("n")
+KEY_PULL =ord('p')
 
 INVISIBLE = 0
 DOCKER_NOT_INSTALL_TEXT = (

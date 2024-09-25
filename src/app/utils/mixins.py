@@ -1,6 +1,9 @@
 """
 This module provides a mixin classes.
 """
+import curses
+from urllib.parse import urlparse, parse_qs
+
 from ..utils.constants import *
 from ..utils.enams import Colors
 
@@ -9,6 +12,18 @@ class MenuMixin:
     """
     A mixin class that provides methods for rendering a menu in a curses-based terminal application.
     """
+    @staticmethod
+    def put_footer(screen: curses.window, center_text: str):
+        height, width = screen.getmaxyx()
+
+        # Значения для вывода
+        left_value = "<"
+        center_value = center_text
+        right_value = ">"
+
+        screen.addstr(height - 1, 0, left_value, curses.color_pair(Colors.WHITE_ON_YELLOW))  # Внизу слева
+        screen.addstr(height - 1, (width // 2) - (len(center_value) // 2), center_value, curses.color_pair(Colors.WHITE_ON_YELLOW))  # По центру
+        screen.addstr(height - 1, width - len(right_value) - 1, right_value, curses.color_pair(Colors.WHITE_ON_YELLOW))
 
     @staticmethod
     def put_head_menu(screen: curses.window, title: str):
@@ -34,3 +49,16 @@ class MenuMixin:
         screen.addstr(END_OF_LINE)
         screen.addstr(2, 0, PLUS + DASH * (width - 2) + PLUS, curses.color_pair(Colors.WHITE_ON_BLUE))
         screen.addstr(END_OF_LINE)
+
+
+class UrlMixin:
+
+    @staticmethod
+    def get_query_param_from_url(url: str, query_param_name: str) -> str:
+        parsed_url = urlparse(url)
+        query_params = parse_qs(parsed_url.query)
+        return query_params.get(query_param_name, [None])[0]
+
+
+
+

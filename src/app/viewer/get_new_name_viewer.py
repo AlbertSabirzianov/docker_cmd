@@ -1,3 +1,5 @@
+from curses.ascii import ispunct, isalpha, isdigit
+
 from .base import ABSViewer
 from ..utils.constants import *
 from ..utils.enams import Colors
@@ -73,7 +75,7 @@ class GetNewNameViewer(ABSViewer, MenuMixin):
                     return EMPTY_STRING
                 if char == curses.KEY_BACKSPACE:
                     self.backspace()
-                else:
+                elif isalpha(char) or ispunct(char) or char == ord(SPACE) or isdigit(char):
                     self.add_char(char=chr(char))
 
             except KeyboardInterrupt:
