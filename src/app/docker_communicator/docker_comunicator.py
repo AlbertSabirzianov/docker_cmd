@@ -305,6 +305,11 @@ class DockerCommunicator:
             DOCKER_INSPECT_BY_ID.replace("<id>", container_or_image_id)
         )
 
+    def pull(self, name:str) -> None:
+        self.__run_command(
+            DOCKER_PULL.replace("<name>", name)
+        )
+
 
 docker_communicator = DockerCommunicator()
 

@@ -2,6 +2,7 @@ from curses.ascii import isalpha, ispunct, isdigit
 from typing import Optional
 
 from .base import ABSViewer
+from .search_tag_viewer import SearchTagViewer
 from ..docker_communicator.docker_api_communicator import DockerApiCommunicator
 from ..utils.constants import *
 from ..utils.enams import Steps, QueryParams
@@ -103,6 +104,13 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
                     self.page_number = page
                     self.data = self.api_communicator.get_repositories(self.text, page)
 
+                if char == KEY_ENTER and self.get_tables():
+                    search_tag_viewer = SearchTagViewer(
+                        screen=self.stdscr,
+                        obj_name=self.get_tables()[self.index.value],
+                        api_communicator=self.api_communicator
+                    )
+                    search_tag_viewer.run()
 
 
                 elif isalpha(char) or ispunct(char) or isdigit(char):

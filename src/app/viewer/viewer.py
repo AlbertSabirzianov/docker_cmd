@@ -475,6 +475,7 @@ class Viewer(ABSViewer):
                         screen=self.stdscr
                     )
                     search_viewer.run()
+                    self.update()
 
                 self.check_indexes()
 
