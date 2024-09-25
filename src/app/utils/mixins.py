@@ -4,6 +4,8 @@ This module provides a mixin classes.
 import curses
 from urllib.parse import urlparse, parse_qs
 
+from pexpect.screen import screen
+
 from ..utils.constants import *
 from ..utils.enams import Colors
 
@@ -49,6 +51,34 @@ class MenuMixin:
         screen.addstr(END_OF_LINE)
         screen.addstr(2, 0, PLUS + DASH * (width - 2) + PLUS, curses.color_pair(Colors.WHITE_ON_BLUE))
         screen.addstr(END_OF_LINE)
+
+
+class TablesMixin:
+
+    @staticmethod
+    def put_tables(screen: curses.window, tables: list[str], index: int):
+        tables: list[str] = tables
+        cursor_index: int = index
+
+        height, width = screen.getmaxyx()
+
+        start = 0
+        end = height - 9
+
+        if cursor_index > end:
+            start = cursor_index - height + 10
+            end = start + end
+
+        for ind, table in enumerate(tables):
+            if ind < start:
+                continue
+            if ind > end:
+                break
+            if ind == cursor_index:
+                screen.addstr(table[:width - 8], curses.color_pair(Colors.WHITE_ON_YELLOW))
+            else:
+                screen.addstr(table[:width - 8])
+            screen.addstr(END_OF_LINE)
 
 
 class UrlMixin:

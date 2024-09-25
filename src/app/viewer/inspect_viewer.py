@@ -8,12 +8,12 @@ information about Docker images, containers Inspect Information and manipulate t
 
 from .base import ABSViewer
 from ..utils.constants import *
-from ..utils.enams import Colors, Steps
+from ..utils.enams import Steps
 from ..utils.index import ObjIndex
-from ..utils.mixins import MenuMixin
+from ..utils.mixins import MenuMixin, TablesMixin
 
 
-class InspectViewer(ABSViewer, MenuMixin):
+class InspectViewer(ABSViewer, MenuMixin, TablesMixin):
     """
     A viewer class for displaying inspection details of Docker entities.
 
@@ -78,36 +78,6 @@ class InspectViewer(ABSViewer, MenuMixin):
             title=self.obj_name
         )
 
-    def put_main_table_in_screen(self):
-        """
-        Displays the main table of the selected Docker entity based on the current choice in the terminal window.
-
-        This method handles the rendering of the inspection tables, highlighting
-        the currently selected table based on the user's navigation.
-        """
-        tables: list[str] = self.tables
-        cursor_index: int = self.index.value
-
-        height, width = self.stdscr.getmaxyx()
-
-        start = 0
-        end = height - 9
-
-        if cursor_index > end:
-            start = cursor_index - height + 10
-            end = start + end
-
-        for ind, table in enumerate(tables):
-            if ind < start:
-                continue
-            if ind > end:
-                break
-            if ind == cursor_index:
-                self.stdscr.addstr(table[:width - 8], curses.color_pair(Colors.WHITE_ON_YELLOW))
-            else:
-                self.stdscr.addstr(table[:width - 8])
-            self.stdscr.addstr(END_OF_LINE)
-
     def change_index(self, char: int) -> None:
         """
         Changes the selected Docker entity index based on the given character input.
@@ -134,7 +104,11 @@ class InspectViewer(ABSViewer, MenuMixin):
             try:
                 self.stdscr.clear()
                 self.put_menu_on_screen()
-                self.put_main_table_in_screen()
+                self.put_tables(
+                    screen=self.stdscr,
+                    tables=self.tables,
+                    index=self.index.value
+                )
                 self.stdscr.refresh()
 
                 char = self.stdscr.getch()

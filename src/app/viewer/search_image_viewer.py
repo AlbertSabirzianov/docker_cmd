@@ -4,13 +4,13 @@ from typing import Optional
 from .base import ABSViewer
 from ..docker_communicator.docker_api_communicator import DockerApiCommunicator
 from ..utils.constants import *
-from ..utils.enams import Colors, Steps, QueryParams
+from ..utils.enams import Steps, QueryParams
 from ..utils.hints import ImageResponse
 from ..utils.index import ObjIndex
-from ..utils.mixins import MenuMixin, UrlMixin
+from ..utils.mixins import MenuMixin, UrlMixin, TablesMixin
 
 
-class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin):
+class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
 
     def __init__(self, screen: curses.window):
         self.stdscr = screen
@@ -34,30 +34,6 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin):
                 else:
                     return f"{self.page_number}/{(self.data['count'] // 10) + 1}"
         return "0/0"
-
-    def put_tables(self):
-        tables: list[str] = self.get_tables()
-        cursor_index: int = self.index.value
-
-        height, width = self.stdscr.getmaxyx()
-
-        start = 0
-        end = height - 9
-
-        if cursor_index > end:
-            start = cursor_index - height + 10
-            end = start + end
-
-        for ind, table in enumerate(tables):
-            if ind < start:
-                continue
-            if ind > end:
-                break
-            if ind == cursor_index:
-                self.stdscr.addstr(table[:width - 8], curses.color_pair(Colors.WHITE_ON_YELLOW))
-            else:
-                self.stdscr.addstr(table[:width - 8])
-            self.stdscr.addstr(END_OF_LINE)
 
     def backspace(self):
         self.text = self.text[:-1]
@@ -86,7 +62,11 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin):
                 else:
                     self.put_head_menu(self.stdscr, CURS + START_TYPE_NAME)
 
-                self.put_tables()
+                self.put_tables(
+                    screen=self.stdscr,
+                    tables=self.get_tables(),
+                    index=self.index.value
+                )
                 self.put_footer(
                     screen=self.stdscr,
                     center_text=self.get_page_information()
