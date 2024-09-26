@@ -306,6 +306,12 @@ class DockerCommunicator:
         )
 
     def pull(self, name:str) -> None:
+        """
+        Pull a Docker image.
+
+        Args:
+            name (str): The name of the Docker image.
+        """
         self.__run_command(
             DOCKER_PULL.replace("<name>", name)
         )

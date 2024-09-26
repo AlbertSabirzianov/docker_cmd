@@ -21,6 +21,9 @@ KEY_PULL = ord('p')
 KEY_LATEST = ord('l')
 
 INVISIBLE = 0
+START_PAGE_NUMBER = 1
+PAGE_SIZE = 10
+NO_PAGES = "0/0"
 DOCKER_NOT_INSTALL_TEXT = (
     "Sorry - Docker is not installed or not running...\n"
     "press any key to exit"
@@ -59,6 +62,10 @@ SPACE = " "
 EMPTY_STRING = ""
 UNDERSCORE = "_"
 CURS = ">"
+SLASH = '/'
+COLON = ':'
+LIBRARY = "library"
+LATEST = "latest"
 
 
 KEY_STEPS_DICT: dict[int, Steps] = {

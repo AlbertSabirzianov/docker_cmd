@@ -4,8 +4,6 @@ This module provides a mixin classes.
 import curses
 from urllib.parse import urlparse, parse_qs
 
-from pexpect.screen import screen
-
 from ..utils.constants import *
 from ..utils.enams import Colors
 
@@ -16,6 +14,13 @@ class MenuMixin:
     """
     @staticmethod
     def put_footer(screen: curses.window, center_text: str):
+        """
+        Renders a footer at the bottom of the screen.
+
+        Args:
+            screen (curses.window): The curses window object where the footer will be drawn.
+            center_text (str): The text to display in the center of the footer.
+        """
         height, width = screen.getmaxyx()
 
         # Значения для вывода
@@ -54,9 +59,20 @@ class MenuMixin:
 
 
 class TablesMixin:
+    """
+    A mixin class that provides methods for rendering tables in a curses-based terminal application.
+    """
 
     @staticmethod
     def put_tables(screen: curses.window, tables: list[str], index: int):
+        """
+        Renders a list of tables on the given screen.
+
+        Args:
+            screen (curses.window): The curses window object where the tables will be drawn.
+            tables (list[str]): A list of table strings to display.
+            index (int): The index of the currently selected table.
+        """
         tables: list[str] = tables
         cursor_index: int = index
 
@@ -82,9 +98,22 @@ class TablesMixin:
 
 
 class UrlMixin:
+    """
+    A mixin class that provides methods for handling URLs and their query parameters.
+    """
 
     @staticmethod
     def get_query_param_from_url(url: str, query_param_name: str) -> str:
+        """
+        Extracts a specific query parameter from a given URL.
+
+        Args:
+            url (str): The URL from which to extract the query parameter.
+            query_param_name (str): The name of the query parameter to extract.
+
+        Returns:
+            str: The value of the query parameter, or None if it does not exist.
+        """
         parsed_url = urlparse(url)
         query_params = parse_qs(parsed_url.query)
         return query_params.get(query_param_name, [None])[0]

@@ -1,9 +1,7 @@
-import curses
-
 from .base import ABSViewer
 from ..docker_communicator.docker_api_communicator import DockerApiCommunicator
 from ..docker_communicator.docker_comunicator import DockerCommunicator
-from ..utils.constants import KEY_EXIT, KEY_ESC, KEY_STEPS_DICT, KEY_ENTER, ICON, HELP_TEXT, KEY_LATEST
+from ..utils.constants import *
 from ..utils.enams import Steps, QueryParams
 from ..utils.hints import TagResponse
 from ..utils.index import ObjIndex
@@ -11,18 +9,36 @@ from ..utils.mixins import MenuMixin, TablesMixin, UrlMixin
 
 
 class SearchTagViewer(ABSViewer, MenuMixin, TablesMixin, UrlMixin):
+    """
+    A viewer class for searching and displaying Docker image tags in a terminal interface.
+    It handles user input, displays search results, and allows navigation through pages of tags.
+    """
 
     def __init__(self, screen: curses.window, obj_name: str, api_communicator: DockerApiCommunicator):
+        """
+        Initializes the SearchTagViewer with the given curses window and object name.
+
+        Args:
+            screen (curses.window): The curses window object for rendering the interface.
+            obj_name (str): The name of the Docker object (image) to search for.
+            api_communicator (DockerApiCommunicator): The API communicator for fetching tags.
+        """
         self.index: ObjIndex = ObjIndex()
         self.docker_communicator: DockerCommunicator = DockerCommunicator()
         self.api_communicator: DockerApiCommunicator = api_communicator
         self.stdscr = screen
-        self.name = obj_name if '/' in obj_name else "library" + "/" + obj_name
+        self.name = obj_name if SLASH in obj_name else LIBRARY + SLASH + obj_name
         self.data: TagResponse = self.api_communicator.get_tags(self.name)
-        self.page_number: int = 1
+        self.page_number: int = START_PAGE_NUMBER
         self.key_steps_dict: dict[int, Steps] = KEY_STEPS_DICT
 
     def get_tables(self) -> list[str]:
+        """
+        Retrieves the list of Docker image tags from the current data.
+
+        Returns:
+            list[str]: A list of tag names if data is available, otherwise an empty list.
+        """
         tags = [
             d['name'] for d in self.data['results']
         ]
@@ -44,13 +60,19 @@ class SearchTagViewer(ABSViewer, MenuMixin, TablesMixin, UrlMixin):
             self.index.value = max_value
 
     def get_page_information(self) -> str:
+        """
+        Generates a string representing the current page information.
+
+        Returns:
+            str: A string in the format "current_page/total_pages".
+        """
         if self.data:
             if self.data['count']:
-                if self.data['count'] % 10 == 0:
-                    return f"{self.page_number}/{self.data['count'] // 10}"
+                if self.data['count'] % PAGE_SIZE == 0:
+                    return f"{self.page_number}/{self.data['count'] // PAGE_SIZE}"
                 else:
-                    return f"{self.page_number}/{(self.data['count'] // 10) + 1}"
-        return "0/0"
+                    return f"{self.page_number}/{(self.data['count'] // PAGE_SIZE) + 1}"
+        return NO_PAGES
 
     def icon_to_screen(self, help_text: bool = False):
         """
@@ -73,9 +95,19 @@ class SearchTagViewer(ABSViewer, MenuMixin, TablesMixin, UrlMixin):
         self.stdscr.refresh()
 
     def get_tag(self) -> str:
+        """
+        Retrieves the currently selected tag based on the index.
+
+        Returns:
+            str: The name of the currently selected tag.
+        """
         return self.get_tables()[self.index.value]
 
     def run(self):
+        """
+        Main loop for running the SearchTagViewer. It handles user input,
+        updates the display, and manages navigation through search results.
+        """
         while True:
             try:
                 self.stdscr.clear()
@@ -112,11 +144,11 @@ class SearchTagViewer(ABSViewer, MenuMixin, TablesMixin, UrlMixin):
 
                 if char == KEY_ENTER:
                     self.icon_to_screen()
-                    self.docker_communicator.pull(self.name + ":" + self.get_tag())
+                    self.docker_communicator.pull(self.name + COLON + self.get_tag())
 
                 if char == KEY_LATEST:
                     self.icon_to_screen()
-                    self.docker_communicator.pull(self.name + ":" + "latest")
+                    self.docker_communicator.pull(self.name + COLON + LATEST)
 
             except KeyboardInterrupt:
                 return

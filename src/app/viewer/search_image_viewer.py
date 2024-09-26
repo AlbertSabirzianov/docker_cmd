@@ -12,31 +12,56 @@ from ..utils.mixins import MenuMixin, UrlMixin, TablesMixin
 
 
 class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
+    """
+    A viewer class for searching and displaying Docker images in a terminal interface.
+    It handles user input, displays search results, and allows navigation through pages of results.
+    """
 
     def __init__(self, screen: curses.window):
+        """
+        Initializes the SearchImageViewer with the given curses window.
+
+        Args:
+            screen (curses.window): The curses window object for rendering the interface.
+        """
         self.stdscr = screen
         self.text: str = EMPTY_STRING
         self.data: Optional[ImageResponse] = None
         self.index: ObjIndex = ObjIndex()
         self.key_steps_dict: dict[int, Steps] = KEY_STEPS_DICT
         self.api_communicator = DockerApiCommunicator()
-        self.page_number: int = 1
+        self.page_number: int = START_PAGE_NUMBER
 
     def get_tables(self) -> list[str]:
+        """
+        Retrieves the list of Docker image repository names from the current data.
+
+        Returns:
+            list[str]: A list of repository names if data is available, otherwise an empty list.
+        """
         if self.data:
             return [d['repo_name'] for d in self.data['results']]
         return []
 
     def get_page_information(self) -> str:
+        """
+        Generates a string representing the current page information.
+
+        Returns:
+            str: A string in the format "current_page/total_pages".
+        """
         if self.data:
             if self.data['count']:
-                if self.data['count'] % 10 == 0:
-                    return f"{self.page_number}/{self.data['count'] // 10}"
+                if self.data['count'] % PAGE_SIZE == 0:
+                    return f"{self.page_number}/{self.data['count'] // PAGE_SIZE}"
                 else:
-                    return f"{self.page_number}/{(self.data['count'] // 10) + 1}"
-        return "0/0"
+                    return f"{self.page_number}/{(self.data['count'] // PAGE_SIZE) + 1}"
+        return NO_PAGES
 
     def backspace(self):
+        """
+        Removes the last character from the current search text.
+        """
         self.text = self.text[:-1]
 
     def change_index(self, char: int) -> None:
@@ -55,6 +80,10 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
             self.index.value = max_value
 
     def run(self):
+        """
+        Main loop for running the SearchImageViewer. It handles user input,
+        updates the display, and manages navigation through search results.
+        """
         while True:
             try:
                 self.stdscr.clear()
@@ -79,7 +108,7 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
                     return
                 if char == curses.KEY_BACKSPACE:
                     self.backspace()
-                    self.page_number = 1
+                    self.page_number = START_PAGE_NUMBER
                     self.data = self.api_communicator.get_repositories(self.text)
 
                 if char in (curses.KEY_DOWN, curses.KEY_UP):
@@ -112,10 +141,10 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
                     )
                     search_tag_viewer.run()
 
-
                 elif isalpha(char) or ispunct(char) or isdigit(char):
                     self.text += chr(char)
                     self.data = self.api_communicator.get_repositories(self.text)
-                    self.page_number = 1
+                    self.page_number = START_PAGE_NUMBER
+
             except KeyboardInterrupt:
                 return
