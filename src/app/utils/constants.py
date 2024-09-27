@@ -22,7 +22,7 @@ KEY_LATEST = ord('l')
 
 INVISIBLE = 0
 START_PAGE_NUMBER = 1
-PAGE_SIZE = 10
+PAGE_SIZE = 100
 NO_PAGES = "0/0"
 DOCKER_NOT_INSTALL_TEXT = (
     "Sorry - Docker is not installed or not running...\n"

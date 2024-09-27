@@ -13,6 +13,7 @@ from abc import ABC, abstractmethod
 from typing import Union
 
 from ..exeptions.exeptions import DockerApiError
+from ..utils.constants import PAGE_SIZE
 from ..utils.enams import QueryParams, DockerApiEndpoints
 from ..utils.hints import ImageResponse, TagResponse
 
@@ -101,7 +102,8 @@ class DockerApiCommunicator(ABCDockerApi):
             url=DockerApiEndpoints.DOCKER_REPOSITORIES_ENDPOINT,
             query_params={
                 QueryParams.QUERY.value: text,
-                QueryParams.PAGE.value: page
+                QueryParams.PAGE.value: page,
+                QueryParams.PAGE_SIZE.value: PAGE_SIZE
             }
         )
         data: bytes = self.__get_http_response(url=url)
@@ -124,7 +126,8 @@ class DockerApiCommunicator(ABCDockerApi):
         url = self.__add_query_to_url(
             url=endpoint,
             query_params={
-                QueryParams.PAGE.value: page
+                QueryParams.PAGE.value: page,
+                QueryParams.PAGE_SIZE.value: PAGE_SIZE
             }
         )
         data: bytes = self.__get_http_response(url)
