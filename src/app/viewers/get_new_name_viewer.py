@@ -70,7 +70,7 @@ class GetNewNameViewer(ABSViewer, MenuMixin):
                 char = self.stdscr.getch()
 
                 if char == KEY_ENTER:
-                    return self.new_name.replace(SPACE, UNDERSCORE)
+                    return self.new_name.replace(SPACE, DASH)
                 if char == KEY_ESC:
                     return EMPTY_STRING
                 if char == curses.KEY_BACKSPACE:
