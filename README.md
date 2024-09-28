@@ -17,19 +17,18 @@ Run the application:
 ```commandline
 python3 main.py
 ```
-# Instructions
-The utility allows you to view, highlight, and delete one or several Docker objects (images, containers, or volumes) at once. There is also functionality for saving Docker objects to an archive. The keys used are:
+# How to use
+Immediately after launching the application, you will see a menu where all the docker images installed on your device are displayed
+![docker images menu](images/main_menu.png)
+By pressing the right and left keys, you can easily switch between tabs with docker containers and volumes (there are three tabs in total images, volumes and containers).
+Use the forward and backward keys to move the cursor. To select one or more objects, use the space bar or enter keys, after which the selected objects will look like in the picture below.
+![selected objects](images/underlined.png)
+You can use the following keys to interact with selected objects
 ```text
-LEFT, RIGHT  -- switch tab (there are 3 tabs in total - images, containers, and volumes)
-UP, DOWN     -- move the cursor
-SPACE, ENTER -- select the chosen object
-d            -- delete: if no objects are selected - the object on which the cursor is located is deleted, otherwise all selected objects are deleted
-r            -- refresh
-q, ESC       -- exit
-h            -- message with all available commands
-s            -- save the selected object to a tar archive: if no objects are selected - the object on which the cursor is located is saved, otherwise all selected objects are saved
-i            -- view the inspect information of the selected image or container
-n            -- rename the selected object
+"d"
+delete all selected objects
+if no objects are selected - the object on which the cursor is located is deleted
+
 ```
 
 
