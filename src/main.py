@@ -2,12 +2,12 @@ import curses
 
 from app.utils.enams import Colors
 from app.utils.constants import INVISIBLE
-from app.viewer.viewer import Viewer
+from app.viewers.main_viewer import Viewer
 
 
 def main(stdscr: curses.window):
     """
-    The main function for running the Docker images and containers viewer.
+    The main function for running the Docker images and containers viewers.
 
     Parameters:
     - stdscr: A curses.window object representing the terminal window.

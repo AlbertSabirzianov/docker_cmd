@@ -2,8 +2,9 @@ from curses.ascii import isalpha, ispunct, isdigit
 from typing import Optional
 
 from .base import ABSViewer
+from .inspect_viewer import InspectViewer
 from .search_tag_viewer import SearchTagViewer
-from ..docker_communicator.docker_api_communicator import DockerApiCommunicator
+from ..docker_communicators.docker_api_communicator import DockerApiCommunicator
 from ..utils.constants import *
 from ..utils.enams import Steps, QueryParams
 from ..utils.hints import ImageResponse
@@ -13,7 +14,7 @@ from ..utils.mixins import MenuMixin, UrlMixin, TablesMixin
 
 class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
     """
-    A viewer class for searching and displaying Docker images in a terminal interface.
+    A viewers class for searching and displaying Docker images in a terminal interface.
     It handles user input, displays search results, and allows navigation through pages of results.
     """
 
@@ -104,7 +105,7 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
 
                 char = self.stdscr.getch()
 
-                if char in (KEY_EXIT, KEY_ESC):
+                if char == KEY_ESC:
                     return
                 if char == curses.KEY_BACKSPACE:
                     self.backspace()
@@ -123,6 +124,7 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
                     )
                     self.page_number = page
                     self.data = self.api_communicator.get_repositories(self.text, page)
+                    self.index.clear()
                 if char == curses.KEY_RIGHT and self.data and self.data['next']:
                     page = int(
                         self.get_query_param_from_url(
@@ -132,7 +134,7 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
                     )
                     self.page_number = page
                     self.data = self.api_communicator.get_repositories(self.text, page)
-
+                    self.index.clear()
                 if char == KEY_ENTER and self.get_tables():
                     search_tag_viewer = SearchTagViewer(
                         screen=self.stdscr,
@@ -141,10 +143,22 @@ class SearchImageViewer(ABSViewer, MenuMixin, UrlMixin, TablesMixin):
                     )
                     search_tag_viewer.run()
 
+                if char == KEY_SPASE and self.data["results"]:
+                    images_tables: list[str] = []
+                    data = self.data["results"][self.index.value]
+                    self.put_tables_from_dict_or_list(data, images_tables)
+                    inspect_viewer = InspectViewer(
+                        screen=self.stdscr,
+                        obj_name=self.get_tables()[self.index.value],
+                        tables=images_tables
+                    )
+                    inspect_viewer.run()
+
                 elif isalpha(char) or ispunct(char) or isdigit(char):
                     self.text += chr(char)
                     self.data = self.api_communicator.get_repositories(self.text)
                     self.page_number = START_PAGE_NUMBER
+                    self.index.clear()
 
             except KeyboardInterrupt:
                 return

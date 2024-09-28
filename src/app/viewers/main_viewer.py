@@ -1,7 +1,7 @@
 """
-Module: viewer
+Module: viewers
 
-The viewer module provides a Viewer class for managing and interacting with
+The viewers module provides a Viewer class for managing and interacting with
 Docker images, containers, and volumes. It provides functionality to display
 information about Docker entities and manipulate them through the terminal.
 
@@ -17,17 +17,18 @@ from .base import ABSViewer
 from .get_new_name_viewer import GetNewNameViewer
 from .inspect_viewer import InspectViewer
 from .search_image_viewer import SearchImageViewer
-from ..docker_communicator.docker_comunicator import docker_communicator, DockerCommunicator
+from ..docker_communicators.docker_comunicator import docker_communicator, DockerCommunicator
 from ..exeptions.exeptions import DockerNotRunningError
 from ..menu_table.menu_table import menu_table, MenuTable
 from ..utils.constants import *
 from ..utils.enams import Colors, OperatingSystems, MenuChoice, IdIndexes, NameIndexes, Steps, Extensions
 from ..utils.index import ObjIndex
+from ..utils.mixins import UrlMixin
 
 
-class Viewer(ABSViewer):
+class Viewer(ABSViewer, UrlMixin):
     """
-    The Viewer class represents a viewer for Docker images and containers.
+    The Viewer class represents a viewers for Docker images and containers.
     """
 
     def __init__(self, stdscr: curses.window):
@@ -148,7 +149,7 @@ class Viewer(ABSViewer):
 
     def update(self):
         """
-        Updates the viewer by clearing the cache,
+        Updates the viewers by clearing the cache,
         resetting the selected Docker entity indexes,
         and clearing the underlined images, containers and volumes.
         """
@@ -352,7 +353,7 @@ class Viewer(ABSViewer):
 
     def inspect(self):
         """
-        Inspects a Docker container or Image and displays its details in a viewer.
+        Inspects a Docker container or Image and displays its details in a viewers.
         """
         try:
             js_obj: str = self.docker_communicator.inspect(
@@ -360,7 +361,7 @@ class Viewer(ABSViewer):
             )
             inspect_viewer = InspectViewer(
                 screen=self.stdscr,
-                tables_in_json=js_obj,
+                tables=self.get_inspect_tables_from_json_string(js_obj),
                 obj_name=self.get_name_by_index(self.get_index())
             )
             inspect_viewer.run()
@@ -371,7 +372,7 @@ class Viewer(ABSViewer):
         """
         Renames an object based on user input.
 
-        This method displays a viewer to get a new name from the user. It retrieves
+        This method displays a viewers to get a new name from the user. It retrieves
         the current name of the object based on the selected index and attempts to
         rename it using the appropriate renaming function from the dictionary of
         rename functions. If the renaming is successful, it updates the display.
@@ -418,7 +419,7 @@ class Viewer(ABSViewer):
 
     def run(self):
         """
-        Runs the viewer in an infinite loop, continuously updating and refreshing the display based on user input.
+        Runs the viewers in an infinite loop, continuously updating and refreshing the display based on user input.
         """
 
         while True:
@@ -489,8 +490,11 @@ class Viewer(ABSViewer):
                 self.stdscr.clear()
                 self.stdscr.addstr(DOCKER_NOT_INSTALL_TEXT)
                 self.stdscr.refresh()
-                self.stdscr.getch()
-                return
+                try:
+                    self.stdscr.getch()
+                    return
+                except KeyboardInterrupt:
+                    return
 
             except KeyboardInterrupt:
                 return

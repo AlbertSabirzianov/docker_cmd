@@ -15,57 +15,25 @@ from ..utils.mixins import MenuMixin, TablesMixin
 
 class InspectViewer(ABSViewer, MenuMixin, TablesMixin):
     """
-    A viewer class for displaying inspection details of Docker entities.
+    A viewers class for displaying inspection details of Docker entities.
 
     This class inherits from ABSViewer and MenuMixin, providing functionality
     to visualize the inspection data of Docker containers or images in a terminal
     interface using the curses library.
     """
 
-    REPLAYED_STRINGS: list[str] = [
-        '"',
-        ",",
-        "{",
-        "}",
-        "[",
-        "]",
-    ]
-
-    def __get_inspect_tables(self, string: str) -> list[str]:
-        """
-        Parses the inspection JSON string and extracts relevant tables.
-
-        This private method removes unwanted characters from the JSON string
-        and splits it into a list of non-empty strings representing tables.
-
-        Args:
-            string (str): The JSON string containing inspection data.
-
-        Returns:
-            list[str]: A list of parsed table strings.
-        """
-        parsed_str: str = string
-        for s in self.REPLAYED_STRINGS:
-            parsed_str = parsed_str.replace(
-                s,
-                EMPTY_STRING
-            )
-        return [
-            s[8:] for s in parsed_str.split(END_OF_LINE) if s.strip()
-        ]
-
-    def __init__(self, screen: curses.window, tables_in_json: str, obj_name: str):
+    def __init__(self, screen: curses.window, tables: list[str], obj_name: str):
         """
         Initializes the InspectViewer with the given screen and inspection data.
 
         Args:
             screen (curses.window): The curses window object for rendering.
-            tables_in_json (str): The JSON string containing inspection data.
+            tables list[str]: The list of strings containing inspection data.
             obj_name (str): The name of the Docker object being inspected.
         """
         self.stdscr = screen
         self.obj_name: str = obj_name
-        self.tables: list[str] = self.__get_inspect_tables(tables_in_json)
+        self.tables: list[str] = tables
         self.index: ObjIndex = ObjIndex()
         self.key_steps_dict: dict[int, Steps] = KEY_STEPS_DICT
 

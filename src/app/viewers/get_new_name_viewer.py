@@ -8,7 +8,7 @@ from ..utils.mixins import MenuMixin
 
 class GetNewNameViewer(ABSViewer, MenuMixin):
     """
-    A viewer for obtaining a new name input from the user.
+    A viewers for obtaining a new name input from the user.
 
     This class provides a user interface for the user to input a new name
     using the curses library. It handles character input, backspace functionality,
@@ -47,7 +47,7 @@ class GetNewNameViewer(ABSViewer, MenuMixin):
 
     def run(self) -> str:
         """
-        Runs the viewer to get a new name from the user.
+        Runs the viewers to get a new name from the user.
 
         This method displays the input interface, captures user input,
         and processes commands such as entering a new name, escaping,

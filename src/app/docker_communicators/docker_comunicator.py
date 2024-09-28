@@ -1,5 +1,5 @@
 """
-Module: docker_communicator
+Module: docker_communicators
 
 This module provides a DockerCommunicator class that facilitates communication with Docker using subprocess.
 It also defines a custom exception class called DockerNotRunningError, which is raised when Docker is not running.

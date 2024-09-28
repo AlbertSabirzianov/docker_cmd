@@ -1,6 +1,7 @@
 from .base import ABSViewer
-from ..docker_communicator.docker_api_communicator import DockerApiCommunicator
-from ..docker_communicator.docker_comunicator import DockerCommunicator
+from .inspect_viewer import InspectViewer
+from ..docker_communicators.docker_api_communicator import DockerApiCommunicator
+from ..docker_communicators.docker_comunicator import DockerCommunicator
 from ..utils.constants import *
 from ..utils.enams import Steps, QueryParams
 from ..utils.hints import TagResponse
@@ -10,7 +11,7 @@ from ..utils.mixins import MenuMixin, TablesMixin, UrlMixin
 
 class SearchTagViewer(ABSViewer, MenuMixin, TablesMixin, UrlMixin):
     """
-    A viewer class for searching and displaying Docker image tags in a terminal interface.
+    A viewers class for searching and displaying Docker image tags in a terminal interface.
     It handles user input, displays search results, and allows navigation through pages of tags.
     """
 
@@ -132,6 +133,8 @@ class SearchTagViewer(ABSViewer, MenuMixin, TablesMixin, UrlMixin):
                     )
                     self.page_number = page
                     self.data = self.api_communicator.get_tags(self.name, page)
+                    self.index.clear()
+
                 if char == curses.KEY_RIGHT and self.data and self.data['next']:
                     page = int(
                         self.get_query_param_from_url(
@@ -141,6 +144,7 @@ class SearchTagViewer(ABSViewer, MenuMixin, TablesMixin, UrlMixin):
                     )
                     self.page_number = page
                     self.data = self.api_communicator.get_tags(self.name, page)
+                    self.index.clear()
 
                 if char == KEY_ENTER:
                     self.icon_to_screen()
@@ -149,6 +153,17 @@ class SearchTagViewer(ABSViewer, MenuMixin, TablesMixin, UrlMixin):
                 if char == KEY_LATEST:
                     self.icon_to_screen()
                     self.docker_communicator.pull(self.name + COLON + LATEST)
+
+                if char in (KEY_SPASE, KEY_INSPECT):
+                    tags_tables: list[str] = []
+                    data = self.data["results"][self.index.value]
+                    self.put_tables_from_dict_or_list(data, tags_tables)
+                    inspect_viewer = InspectViewer(
+                        screen=self.stdscr,
+                        obj_name=self.get_tables()[self.index.value],
+                        tables=tags_tables
+                    )
+                    inspect_viewer.run()
 
             except KeyboardInterrupt:
                 return
