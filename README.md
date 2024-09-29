@@ -36,7 +36,7 @@ delete all selected objects, if no objects are selected - the object on which th
 - **i** (*inspect*) see the inspect information about image or container on which the cursor is located. To exit press **ESC** or **q**.
   ![inspect](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/inspect.png)
   
-  - **p** (*pull*) switch to image search mode on dockerhub. after switching to this mode, you will see a prompt to enter the image name.
+- **p** (*pull*) switch to image search mode on dockerhub. after switching to this mode, you will see a prompt to enter the image name.
   ![search](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/start_type.png)
    
   when you start entering the name of the desired image, the available images on dockerhub for download will begin to appear below. By pressing the right and left keys, you can go to the next/previous page. The current page and their number can be seen at the bottom of the screen.To exit press **ESC** or **cntl + C**.
