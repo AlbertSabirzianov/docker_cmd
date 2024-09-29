@@ -37,7 +37,7 @@ delete all selected objects, if no objects are selected - the object on which th
   ![inspect](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/inspect.png)</b>
   
   - **p** (*pull*) switch to image search mode on dockerhub. after switching to this mode, you will see a prompt to enter the image name.</b>
-    ![search](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/start_type.png)
+  ![search](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/start_type.png)
   </b>  
   when you start entering the name of the desired image, the available images on dockerhub for download will begin to appear below. By pressing the right and left keys, you can go to the next/previous page. The current page and their number can be seen at the bottom of the screen.To exit press **ESC** or **cntl + C**.</b>
   ![result search](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/find_image.png)</b>
