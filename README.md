@@ -43,12 +43,12 @@ delete all selected objects, if no objects are selected - the object on which th
   ![result search](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/find_image.png)
   
   If you press the **space** bar you will be able to see detailed information about the image on which the cursor is located.To exit press **ESC** or **q**
-  ![image info](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/image_information.png)
+  ![image info](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/image_information.png)<br/>
   To select the found image, press **Enter**, after which you will switch to the search mode for the desired tag.To exit press **ESC** or **cntl + C**
   ![find tag](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/find_tag.png)
 
 If you press the **space** bar you will be able to see detailed information about the tag on which the cursor is located.To exit press **ESC** or **q**.
-![tag info](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/tag_information.png)
+![tag info](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/tag_information.png)<br/>
 If you just want pull the latest image you can press **l** and latest image will be pulled on your device.To select the found tag, press **Enter**, after which image with selected tag will be pulled on your device.To exit press **ESC** or **q**.
 
 
