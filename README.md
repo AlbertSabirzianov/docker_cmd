@@ -32,8 +32,8 @@ delete all selected objects, if no objects are selected - the object on which th
 - **q, ESC** (*quit*) exit from help message (or from another page)
 - **n** (*rename*) rename the object on which the cursor is located. Then you press this key you will see window like on the image bellow
   ![rename](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/type_new_name.png)
-  </b>you see a prompt to enter a new name for the selected object, after you enter the desired name and press Enter, the object will be renamed. To exit the new name input mode, press  **ESC** or **cntl + C**.</b>
-— **i** (*inspect*) see the inspect information about image or container on which the cursor is located. To exit press **ESC** or **q**.</b>
+  <br/>you see a prompt to enter a new name for the selected object, after you enter the desired name and press Enter, the object will be renamed. To exit the new name input mode, press  **ESC** or **cntl + C**.</b>
+- **i** (*inspect*) see the inspect information about image or container on which the cursor is located. To exit press **ESC** or **q**.</b>
   ![inspect](https://github.com/AlbertSabirzianov/docker_cmd/blob/main/images/inspect.png)</b>
   
   - **p** (*pull*) switch to image search mode on dockerhub. after switching to this mode, you will see a prompt to enter the image name.</b>
