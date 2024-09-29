@@ -45,12 +45,12 @@ HELP_TEXT = """
 LEFT, RIGHT  -- switch tab (there are 3 tabs in total - images, containers, and volumes)
 UP, DOWN     -- move the cursor
 SPACE, ENTER -- select the chosen object
-d            -- delete: if no objects are selected - the object on which the cursor is located is deleted, otherwise all selected objects are deleted
+d            -- delete 
 r            -- refresh
 q, ESC       -- exit
 h            -- message with all available commands
-s            -- save the selected object to a tar archive: if no objects are selected - the object on which the cursor is located is saved, otherwise all selected objects are saved
-i            -- view the inspect information of the selected image or container
+s            -- save 
+i            -- inspect information of the selected image or container
 n            -- rename the selected object
 """
 START_TYPE_NAME = "Start Type New Name..."
