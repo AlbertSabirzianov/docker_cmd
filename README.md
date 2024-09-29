@@ -3,7 +3,7 @@ A console application for convenient viewing and interaction with Docker objects
 # How to Run
 Download the repository:
 ```commandline
-https://github.com/AlbertSabirzianov/docker_cmd.git
+git clone https://github.com/AlbertSabirzianov/docker_cmd.git
 ```
 If you are using Windows, you need to install windows-curses. There are no dependencies for Linux:
 ```commandline
