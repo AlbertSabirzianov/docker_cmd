@@ -11,6 +11,7 @@ Docker entities and user choices. A variety of dictionaries are used for
 mapping user choices to appropriate methods, indexes, and lists.
 """
 import platform
+import urllib.error
 from typing import Callable, Tuple
 
 from .base import ABSViewer
@@ -18,7 +19,7 @@ from .get_new_name_viewer import GetNewNameViewer
 from .inspect_viewer import InspectViewer
 from .search_image_viewer import SearchImageViewer
 from ..docker_communicators.docker_comunicator import docker_communicator, DockerCommunicator
-from ..exeptions.exeptions import DockerNotRunningError
+from ..exeptions.exeptions import DockerNotRunningError, DockerApiError
 from ..menu_table.menu_table import menu_table, MenuTable
 from ..utils.constants import *
 from ..utils.enams import Colors, OperatingSystems, MenuChoice, IdIndexes, NameIndexes, Steps, Extensions
@@ -484,8 +485,12 @@ class Viewer(ABSViewer, UrlMixin):
                 self.stdscr.clear()
                 self.stdscr.addstr(MAKE_FULL_SCREEN_TEXT)
                 self.stdscr.refresh()
-                if self.stdscr.getch() in (KEY_EXIT, KEY_ESC):
+                try:
+                    if self.stdscr.getch() in (KEY_EXIT, KEY_ESC):
+                        return
+                except KeyboardInterrupt:
                     return
+
             except DockerNotRunningError:
                 self.stdscr.clear()
                 self.stdscr.addstr(DOCKER_NOT_INSTALL_TEXT)
@@ -495,6 +500,24 @@ class Viewer(ABSViewer, UrlMixin):
                     return
                 except KeyboardInterrupt:
                     return
+
+            except urllib.error.URLError:
+                self.stdscr.clear()
+                self.stdscr.addstr(INTERNET_TROUBLE_TEXT)
+                self.stdscr.refresh()
+                try:
+                    self.stdscr.getch()
+                except KeyboardInterrupt:
+                    pass
+
+            except DockerApiError:
+                self.stdscr.clear()
+                self.stdscr.addstr(DOCKER_API_TROUBLE_TEXT)
+                self.stdscr.refresh()
+                try:
+                    self.stdscr.getch()
+                except KeyboardInterrupt:
+                    pass
 
             except KeyboardInterrupt:
                 return

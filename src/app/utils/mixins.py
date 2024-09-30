@@ -129,6 +129,7 @@ class UrlMixin:
                         result,
                         indent + 4
                     )
+                    result.append(EMPTY_STRING)
                 else:
                     result.append(
                         SPACE*indent + str(key) + COLON + SPACE + str(value)
@@ -141,6 +142,7 @@ class UrlMixin:
                         result,
                         indent + 4
                     )
+                    result.append(EMPTY_STRING)
                 else:
                     result.append(
                         SPACE*indent + str(value)

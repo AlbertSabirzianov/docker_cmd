@@ -28,6 +28,8 @@ DOCKER_NOT_INSTALL_TEXT = (
     "Sorry - Docker is not installed or not running...\n"
     "press any key to exit"
 )
+INTERNET_TROUBLE_TEXT = "Sorry internet connection closed..."
+DOCKER_API_TROUBLE_TEXT = "Sorry somthing wrong with Docker Api..."
 MAKE_FULL_SCREEN_TEXT = "make the terminal full screen, please"
 ICON = """
                     ##        .
@@ -52,6 +54,9 @@ h            -- message with all available commands
 s            -- save 
 i            -- inspect information of the selected image or container
 n            -- rename the selected object
+p            -- go to pull mode
+l            -- pull the latest selected image
+SPACE        -- in pull mode get information about image or tag
 """
 START_TYPE_NAME = "Start Type New Name..."
 
