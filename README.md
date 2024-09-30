@@ -29,7 +29,7 @@ delete all selected objects, if no objects are selected - the object on which th
 - __r__  (*refresh*) all information about docker objects will be updated and all selected objects will become unselected.
 - __s__ (*save*) save all selected objects in tar archive, if no objects are selected - the object on which the cursor is located is saved.
 - **h** (*help*) show help message with all available commands
-- **q, ESC** (*quit*) exit from help message (or from another page)
+- **q, ESC** (*quit*) exit from help message (or from application)
 - **n** (*rename*) rename the object on which the cursor is located. Then you press this key you will see window like on the image bellow
   ![rename](images/type_new_name.png)
   you see a prompt to enter a new name for the selected object, after you enter the desired name and press Enter, the object will be renamed. To exit the new name input mode, press  **ESC** or **cntl + C**.</b>
